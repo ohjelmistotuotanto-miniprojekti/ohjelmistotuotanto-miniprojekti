@@ -1,10 +1,10 @@
-name: Continuous Integration and Deployment for ReferenceManager
+name: CI for xUnit Tests
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-  push:
+  pull_request:
     branches:
       - main
 
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -21,16 +21,20 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 9.0 # Use your project's .NET version
+          dotnet-version: 9.0
 
-      # Step 3: Restore dependencies
+      # Step 3: Clean previous builds
+      - name: Clean build artifacts
+        run: dotnet clean
+
+      # Step 4: Restore dependencies
       - name: Restore dependencies
         run: dotnet restore
 
-      # Step 4: Build the project
-      - name: Build the project
-        run: dotnet build --no-restore --configuration Release
+      # Step 5: Build the solution
+      - name: Build the solution
+        run: dotnet build --configuration Release
 
-      # Step 5: Run xUnit tests
+      # Step 6: Run xUnit tests
       - name: Run xUnit tests
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: dotnet test --configuration Release --verbosity normal
