@@ -45,7 +45,10 @@ jobs:
 
       # Step 7: Build the solution with generated version
       - name: Build the solution
-        run: dotnet build --configuration Release -p:Version=${{ steps.gitversion.outputs.FullSemVer }}
+        run: |
+          VERSION=${{ steps.gitversion.outputs.FullSemVer }}
+          if [ -z "$VERSION" ]; then VERSION="0.1.0"; fi
+          dotnet build --configuration Release -p:Version=$VERSION
 
       # Step 8: Run the tests
       - name: Run tests
