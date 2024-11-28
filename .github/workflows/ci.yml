@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
+      # Step 1: Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -23,18 +23,16 @@ jobs:
         with:
           dotnet-version: 9.0
 
-      # Step 3: Clean previous builds
-      - name: Clean build artifacts
-        run: dotnet clean
+      # Step 3: Clean and restore dependencies
+      - name: Clean and restore dependencies
+        run: |
+          dotnet clean
+          dotnet restore
 
-      # Step 4: Restore dependencies
-      - name: Restore dependencies
-        run: dotnet restore
-
-      # Step 5: Build the solution
+      # Step 4: Build the solution
       - name: Build the solution
         run: dotnet build --configuration Release
 
-      # Step 6: Run xUnit tests
-      - name: Run xUnit tests
+      # Step 5: Run the tests
+      - name: Run tests
         run: dotnet test --configuration Release --verbosity normal
