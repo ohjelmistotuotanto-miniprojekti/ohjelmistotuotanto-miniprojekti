@@ -1,0 +1,36 @@
+name: Continuous Integration and Deployment for ReferenceManager
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up .NET
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0 # Use your project's .NET version
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the project
+      - name: Build the project
+        run: dotnet build --no-restore --configuration Release
+
+      # Step 5: Run xUnit tests
+      - name: Run xUnit tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
