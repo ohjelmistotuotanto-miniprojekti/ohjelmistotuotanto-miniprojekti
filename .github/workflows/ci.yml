@@ -35,6 +35,6 @@ jobs:
       - name: Build the solution
         run: dotnet build --configuration Release
 
-      # Step 6: Run tests
+      # Step 6: Run the tests
       - name: Run tests
-        run: dotnet test ReferenceManager.Tests/ReferenceManager.Tests.csproj --configuration Release --verbosity normal
+        run: dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj --configuration Release --verbosity normal
