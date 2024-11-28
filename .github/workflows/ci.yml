@@ -1,4 +1,4 @@
-name: CI for xUnit Tests
+name: CI for xUnit Tests with Versioning
 
 on:
   push:
@@ -31,10 +31,20 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      # Step 5: Build the solution
-      - name: Build the solution
-        run: dotnet build --configuration Release
+      # Step 5: Install GitVersion
+      - name: Install GitVersion
+        run: dotnet tool install --global GitVersion.Tool
 
-      # Step 6: Run the tests
+      # Step 6: Generate version using GitVersion
+      - name: Generate version
+        id: gitversion
+        run: gitversion /output json /showvariable FullSemVer
+        shell: bash
+
+      # Step 7: Build the solution with generated version
+      - name: Build the solution
+        run: dotnet build --configuration Release -p:Version=${{ steps.gitversion.outputs.FullSemVer }}
+
+      # Step 8: Run the tests
       - name: Run tests
         run: dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj --configuration Release --verbosity normal
