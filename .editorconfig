@@ -1,0 +1,45 @@
+root = true
+
+# General Rules for All Files
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# C# Specific Rules
+[*.cs]
+indent_style = space
+indent_size = 4
+max_line_length = 120                                        # Optional: Set maximum line length
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
+csharp_prefer_braces = true:warning                          # Enforce braces for all control blocks
+csharp_style_var_for_built_in_types = false:suggestion       # Use explicit types (e.g., int instead of var)
+csharp_style_var_elsewhere = true:suggestion                 # Use var when type is apparent
+csharp_style_expression_bodied_methods = false:warning       # Use block-bodied methods
+csharp_style_expression_bodied_properties = true:suggestion  # Allow expression-bodied properties
+csharp_style_null_propagation = true:warning                 # Prefer ?. operator over null checks
+csharp_style_prefer_pattern_matching = true:warning          # Prefer pattern matching
+csharp_style_prefer_auto_properties = true:suggestion        # Use auto-properties
+csharp_style_readonly_fields = true:warning                  # Use readonly for fields where applicable
+
+# C# Spacing Rules
+csharp_space_after_keywords_in_control_flow_statements = true:warning             # Add space after keywords (e.g., if, while)
+csharp_space_before_open_square_brackets = false:warning                          # No space before [
+csharp_space_between_method_call_empty_parameter_list_parentheses = false:warning # No space between method call parentheses
+
+# Project and Solution Files
+[*.{csproj,sln}]
+indent_style = space
+indent_size = 2
+
+# JSON Files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# XML Files
+[*.xml]
+indent_style = space
+indent_size = 2

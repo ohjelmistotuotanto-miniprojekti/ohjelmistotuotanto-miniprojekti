@@ -1,0 +1,25 @@
+name: Lint Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up .NET
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0
+
+      # Step 3: Run dotnet-format
+      - name: Run dotnet-format
+        run: dotnet format ReferenceManager.sln --verify-no-changes
