@@ -21,8 +21,8 @@ namespace ReferenceManager
         private string GenerateKey()
         {
             int index = Author.IndexOf(" ");
-            string firstname = Author.Substring(0, index);
-            string key = firstname + Year + Title[0];
+            string firstName = Author.Substring(0, index);
+            string key = firstName + Year + Title[0];
             return key;
         }
 
