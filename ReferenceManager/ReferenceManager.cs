@@ -50,9 +50,9 @@ namespace ReferenceManager
                 Key = "VH91G",
                 Author = "John Seely Brown and Ann Holum",
                 Title = "Making thinking visible",
-                Journal = "Educator",
+                Journal = "",
                 Year = "1981",
-                Volume = "9",
+                Volume = "",
                 Pages = "3--4"
             };
             references.Add(testReference2);
@@ -70,10 +70,6 @@ namespace ReferenceManager
                         break;
                     case "list":
                         ListReferences(references);
-                        for(int i = 0; i < references.Count; i++)
-                        {
-                            _io.Write(references[i].ToBibtex());
-                        }
                         break;
                     case "help":
                         ShowHelp();
@@ -106,6 +102,14 @@ namespace ReferenceManager
             _io.Write("Listing references...");
             _io.Write(references.Count.ToString());
             // TODO: Implement logic to list references
+            int failureCount = 0;
+            for(int i = 0; i < references.Count; i++)
+            {
+                string result = references[i].ToBibtex();
+                if(result == ""){failureCount++;}
+                else{_io.Write(result);}
+            }
+            if(failureCount > 0) {_io.Write("Failed to convert " + failureCount + " references to BibTeX.");}
         }
 
         /// <summary>

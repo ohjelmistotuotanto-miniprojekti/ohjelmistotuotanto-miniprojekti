@@ -35,6 +35,10 @@ namespace ReferenceManager
 
         public override string ToBibtex()
         {
+            if (string.IsNullOrEmpty(Journal) || string.IsNullOrEmpty(Volume) || string.IsNullOrEmpty(Pages) || string.IsNullOrEmpty(Author) || string.IsNullOrEmpty(Title) || string.IsNullOrEmpty(Year))
+            {
+                return "";
+            }
             return 
             $"@article{{{Key},\n" +
             $"  author = {{{Author}}},\n" +
