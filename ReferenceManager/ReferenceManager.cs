@@ -76,6 +76,8 @@ namespace ReferenceManager
         /// </summary>
         private void AddJournalArticle(List<Reference> references)
         {
+            _io.Write("Authors: ");
+            string author = _io.Read().Trim();
             _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
         }
