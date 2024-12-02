@@ -21,6 +21,7 @@ namespace ReferenceManager
         /// </summary>
         /// <returns>BibTeX as a string</returns>
         public abstract string ToBibtex();
+        public abstract void ToBibtexFile();
     }
 
     /// <summary>
@@ -43,6 +44,22 @@ namespace ReferenceManager
             $"  volume = {{{Volume}}},\n" +
             $"  pages = {{{Pages}}}\n" +
             $"}}";
+        }
+
+        public override void ToBibtexFile()
+        {
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(Program.FilePath), true))
+        {
+            outputFile.Write(
+            $"@article{{{Key},\n" +
+            $"  author = {{{Author}}},\n" +
+            $"  title = {{{Title}}},\n" +
+            $"  journal = {{{Journal}}},\n" +
+            $"  year = {{{Year}}},\n" +
+            $"  volume = {{{Volume}}},\n" +
+            $"  pages = {{{Pages}}}\n" +
+            $"}}");
+        }
         }
     }
 }

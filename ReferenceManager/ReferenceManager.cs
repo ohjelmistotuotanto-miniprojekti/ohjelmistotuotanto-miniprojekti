@@ -54,7 +54,7 @@ namespace ReferenceManager
                 {
                     case "add":
                         AddJournalArticle(references);
-                        
+                        testReference.ToBibtexFile(); //TODO: instead of testReference, add the new article reference when AddJournalArticle is done
                         break;
                     case "list":
                         ListReferences(references);
@@ -83,6 +83,7 @@ namespace ReferenceManager
         {
             _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
+            
         }
 
         /// <summary>
