@@ -87,10 +87,23 @@ namespace ReferenceManager
             string Volume = _io.Read().Trim();
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
+            _io.Write("Adding journal article...");
+
+
+            var newArticleReference = new ArticleReference
+            {
+                Key= "avain",
+                Author = author,
+                Title = Title,
+                Journal = Journal,
+                Year = Year,
+                Volume = Volume,
+                Pages = Pages,
+            };
+
+               references.Add(newArticleReference);
 
             
-
-            _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
         }
 
