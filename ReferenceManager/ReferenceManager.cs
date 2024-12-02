@@ -65,8 +65,10 @@ namespace ReferenceManager
                     case "add":
                         AddJournalArticle(references);
                         //TODO: instead of testReference, add the new article reference when AddJournalArticle is done
-                        if(!testReference.ToBibtexFile()){
-                            _io.Write("Failed to add reference to BibTeX file.");}
+                        if (!testReference.ToBibtexFile())
+                        {
+                            _io.Write("Failed to add reference to BibTeX file.");
+                        }
                         break;
                     case "list":
                         ListReferences(references);

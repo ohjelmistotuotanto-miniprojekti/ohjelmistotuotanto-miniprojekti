@@ -49,7 +49,7 @@ namespace ReferenceManager
             {
                 return "";
             }
-            return 
+            return
             $"@article{{{Key},\n" +
             $"  author = {{{Author}}},\n" +
             $"  title = {{{Title}}},\n" +
@@ -63,17 +63,18 @@ namespace ReferenceManager
         public override bool ToBibtexFile()
         {
             using (StreamWriter outputFile = new StreamWriter(Path.Combine(Program.FilePath), true))
-        {
-            string reference = ToBibtex();
-            if(!string.IsNullOrEmpty(reference)) 
             {
-                outputFile.Write(reference + "\n" + "\n");
-                return true;
+                string reference = ToBibtex();
+                if (!string.IsNullOrEmpty(reference))
+                {
+                    outputFile.Write(reference + "\n" + "\n");
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else{
-                return false;
-            }
-        }
         }
     }
 }
