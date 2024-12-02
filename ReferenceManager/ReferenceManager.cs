@@ -33,28 +33,6 @@ namespace ReferenceManager
 
             List<Reference> references = new List<Reference>();
 
-            var testReference = new ArticleReference
-            {
-                Author = "Allan Collins and John Seely Brown and Ann Holum",
-                Title = "Cognitive apprenticeship: making thinking visible",
-                Journal = "American Educator",
-                Year = "1991",
-                Volume = "6",
-                Pages = "38--46"
-            };
-            references.Add(testReference);
-
-            var testReference2 = new ArticleReference
-            {
-                Author = "John Seely Brown and Ann Holum",
-                Title = "Making thinking visible",
-                Journal = "Educator",
-                Year = "1981",
-                Volume = "7",
-                Pages = "3--4"
-            };
-            references.Add(testReference2);
-
             while (true)
             {
                 _io.Write("\nChoose a command (type 'help' for available commands):");
@@ -64,11 +42,6 @@ namespace ReferenceManager
                 {
                     case "add":
                         AddJournalArticle(references);
-                        //TODO: instead of testReference, add the new article reference when AddJournalArticle is done
-                        if (!testReference.ToBibtexFile())
-                        {
-                            _io.Write("Failed to add reference to BibTeX file.");
-                        }
                         break;
                     case "list":
                         ListReferences(references);
@@ -126,16 +99,45 @@ namespace ReferenceManager
             };
             references.Add(newArticleReference);
 
+            if (newArticleReference.ToBibtexFile())
+            {
+                _io.Write("Journal article added successfully.");
+            }
+            else
+            {
+                _io.Write("Failed to add reference to BibTeX file.");
+            }
 
         }
 
         /// <summary>
         /// Lists all references from the BibTeX file.
         /// </summary>
+        /// <summary>
+        /// Lists all references, combining in-memory references and file content.
+        /// </summary>
         public void ListReferences(List<Reference> references)
         {
-            string fileContent = File.ReadAllText(FilePath);
-            _io.Write(fileContent);
+            _io.Write("Listing all references:");
+
+            // Read references from file
+            if (File.Exists(FilePath))
+            {
+                _io.Write("\nReferences from file:");
+                string fileContent = File.ReadAllText(FilePath);
+                if (!string.IsNullOrWhiteSpace(fileContent))
+                {
+                    _io.Write(fileContent);
+                }
+                else
+                {
+                    _io.Write("No references found in file.");
+                }
+            }
+            else
+            {
+                _io.Write("\nNo file found. Add references to create the file.");
+            }
         }
 
         /// <summary>
