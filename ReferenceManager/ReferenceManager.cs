@@ -46,7 +46,6 @@ namespace ReferenceManager
 
             var testReference2 = new ArticleReference
             {
-                Key = "VH91G",
                 Author = "John Seely Brown and Ann Holum",
                 Title = "Making thinking visible",
                 Journal = "Educator",
@@ -112,19 +111,6 @@ namespace ReferenceManager
                 return;
             }
             _io.Write("Adding journal article...");
-
-
-            var newArticleReference = new ArticleReference
-            {
-                Author = author,
-                Title = Title,
-                Journal = Journal,
-                Year = Year,
-                Volume = Volume,
-                Pages = Pages,
-            };
-            references.Add(newArticleReference);
-
 
 
             var newArticleReference = new ArticleReference
