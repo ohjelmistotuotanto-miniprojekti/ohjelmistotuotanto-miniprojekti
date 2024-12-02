@@ -31,6 +31,20 @@ namespace ReferenceManager
         {
             _io.Write($"Using BibTeX file: {FilePath}");
 
+            List<Reference> references = new List<Reference>();
+
+            var testReference = new ArticleReference
+            {
+                Key = "CBH91",
+                Author = "Allan Collins and John Seely Brown and Ann Holum",
+                Title = "Cognitive apprenticeship: making thinking visible",
+                Journal = "American Educator",
+                Year = "1991",
+                Volume = "6",
+                Pages = "38--46"
+            };
+            references.Add(testReference);
+
             while (true)
             {
                 _io.Write("\nChoose a command (type 'help' for available commands):");
@@ -39,10 +53,10 @@ namespace ReferenceManager
                 switch (command)
                 {
                     case "add":
-                        AddJournalArticle();
+                        AddJournalArticle(references);
                         break;
                     case "list":
-                        ListReferences();
+                        ListReferences(references);
                         break;
                     case "help":
                         ShowHelp();
@@ -60,7 +74,7 @@ namespace ReferenceManager
         /// <summary>
         /// Adds a new journal article to the BibTeX file.
         /// </summary>
-        private void AddJournalArticle()
+        private void AddJournalArticle(List<Reference> references)
         {
             _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
@@ -69,9 +83,10 @@ namespace ReferenceManager
         /// <summary>
         /// Lists all references from the BibTeX file.
         /// </summary>
-        private void ListReferences()
+        private void ListReferences(List<Reference> references)
         {
             _io.Write("Listing references...");
+            _io.Write(references.Count.ToString());
             // TODO: Implement logic to list references
         }
 
