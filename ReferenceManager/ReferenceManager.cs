@@ -104,7 +104,7 @@ namespace ReferenceManager
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
 
-            _io.Write("Do you want to add this article");
+            _io.Write("Do you want to add this article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
 
             if (confirmation != "y")
