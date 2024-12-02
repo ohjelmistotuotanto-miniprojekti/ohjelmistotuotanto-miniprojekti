@@ -37,4 +37,30 @@ public class UnitTest2
             $"}}",
             result);
     }
+
+    public void TestToBibtexFile()
+    {
+        var testReference = new ArticleReference
+        {
+            Key = "CBH91",
+            Author = "Allan Collins and John Seely Brown and Ann Holum",
+            Title = "Cognitive apprenticeship: making thinking visible",
+            Journal = "American Educator",
+            Year = "1991",
+            Volume = "6",
+            Pages = "38--46"
+        };
+        testReference.ToBibtexFile();
+        Assert.Equal(
+            $"@article{{CBH91,\n" +
+            $"  author = {{Allan Collins and John Seely Brown and Ann Holum}},\n" +
+            $"  title = {{Cognitive apprenticeship: making thinking visible}},\n" +
+            $"  journal = {{American Educator}},\n" +
+            $"  year = {{1991}},\n" +
+            $"  volume = {{6}},\n" +
+            $"  pages = {{38--46}}\n" +
+            $"}}",
+            File.ReadAllText(Program.FilePath)
+        )
+    }
 }
