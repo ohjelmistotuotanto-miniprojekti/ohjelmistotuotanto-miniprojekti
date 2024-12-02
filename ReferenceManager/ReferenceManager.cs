@@ -45,6 +45,18 @@ namespace ReferenceManager
             };
             references.Add(testReference);
 
+            var testReference2 = new ArticleReference
+            {
+                Key = "VH91G",
+                Author = "John Seely Brown and Ann Holum",
+                Title = "Making thinking visible",
+                Journal = "Educator",
+                Year = "1981",
+                Volume = "9",
+                Pages = "3--4"
+            };
+            references.Add(testReference2);
+
             while (true)
             {
                 _io.Write("\nChoose a command (type 'help' for available commands):");
