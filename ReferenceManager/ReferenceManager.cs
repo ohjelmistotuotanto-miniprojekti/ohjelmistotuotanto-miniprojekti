@@ -35,7 +35,6 @@ namespace ReferenceManager
 
             var testReference = new ArticleReference
             {
-                Key = "CBH91",
                 Author = "Allan Collins and John Seely Brown and Ann Holum",
                 Title = "Cognitive apprenticeship: making thinking visible",
                 Journal = "American Educator",
@@ -74,10 +73,44 @@ namespace ReferenceManager
         /// <summary>
         /// Adds a new journal article to the BibTeX file.
         /// </summary>
-        private void AddJournalArticle(List<Reference> references)
+        public void AddJournalArticle(List<Reference> references)
         {
+            _io.Write("Authors: ");
+            string author = _io.Read().Trim();
+            _io.Write("Title: ");
+            string Title = _io.Read().Trim();
+            _io.Write("Journal: ");
+            string Journal = _io.Read().Trim();
+            _io.Write("Year: ");
+            string Year = _io.Read().Trim();
+            _io.Write("Volume: ");
+            string Volume = _io.Read().Trim();
+            _io.Write("Pages: ");
+            string Pages = _io.Read().Trim();
+
+            _io.Write("Do you want to add this article");
+            string confirmation = _io.Read().Trim().ToLower();
+
+            if (confirmation != "y")
+            {
+                _io.Write("Operation cancelled by the user.");
+                return;
+            }
             _io.Write("Adding journal article...");
-            // TODO: Implement logic to add a new journal article
+
+
+            var newArticleReference = new ArticleReference
+            {
+                Author = author,
+                Title = Title,
+                Journal = Journal,
+                Year = Year,
+                Volume = Volume,
+                Pages = Pages,
+            };
+            references.Add(newArticleReference);
+
+
         }
 
         /// <summary>
