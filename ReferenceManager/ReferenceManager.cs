@@ -87,6 +87,15 @@ namespace ReferenceManager
             string Volume = _io.Read().Trim();
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
+
+            _io.Write("Do you want to add this article");
+             string confirmation = _io.Read().Trim().ToLower();
+
+            if (confirmation != "y")
+            {
+                _io.Write("Operation cancelled by the user.");
+                return;
+            }
             _io.Write("Adding journal article...");
 
 
