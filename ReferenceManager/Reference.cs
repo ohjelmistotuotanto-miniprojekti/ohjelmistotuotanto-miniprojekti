@@ -21,8 +21,8 @@ namespace ReferenceManager
         private string GenerateKey()
         {
             int index = Author.IndexOf(" ");
-            string firstname = Author.Substring(0, index);
-            string key = firstname + Year + Title[0];
+            string firstName = Author.Substring(0, index);
+            string key = firstName + Year + Title[0];
             return key;
         }
 
@@ -31,6 +31,7 @@ namespace ReferenceManager
         /// </summary>
         /// <returns>BibTeX as a string</returns>
         public abstract string ToBibtex();
+        public abstract bool ToBibtexFile();
     }
 
     /// <summary>
@@ -44,7 +45,36 @@ namespace ReferenceManager
 
         public override string ToBibtex()
         {
-            return "BibTeX";
+            if (string.IsNullOrEmpty(Journal) || string.IsNullOrEmpty(Volume) || string.IsNullOrEmpty(Pages) || string.IsNullOrEmpty(Author) || string.IsNullOrEmpty(Title) || string.IsNullOrEmpty(Year))
+            {
+                return "";
+            }
+            return
+            $"@article{{{Key},\n" +
+            $"  author = {{{Author}}},\n" +
+            $"  title = {{{Title}}},\n" +
+            $"  journal = {{{Journal}}},\n" +
+            $"  year = {{{Year}}},\n" +
+            $"  volume = {{{Volume}}},\n" +
+            $"  pages = {{{Pages}}}\n" +
+            $"}}";
+        }
+
+        public override bool ToBibtexFile()
+        {
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(Program.FilePath), true))
+            {
+                string reference = ToBibtex();
+                if (!string.IsNullOrEmpty(reference))
+                {
+                    outputFile.Write(reference + "\n" + "\n");
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
 }

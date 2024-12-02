@@ -44,6 +44,17 @@ namespace ReferenceManager
             };
             references.Add(testReference);
 
+            var testReference2 = new ArticleReference
+            {
+                Author = "John Seely Brown and Ann Holum",
+                Title = "Making thinking visible",
+                Journal = "Educator",
+                Year = "1981",
+                Volume = "7",
+                Pages = "3--4"
+            };
+            references.Add(testReference2);
+
             while (true)
             {
                 _io.Write("\nChoose a command (type 'help' for available commands):");
@@ -53,6 +64,11 @@ namespace ReferenceManager
                 {
                     case "add":
                         AddJournalArticle(references);
+                        //TODO: instead of testReference, add the new article reference when AddJournalArticle is done
+                        if (!testReference.ToBibtexFile())
+                        {
+                            _io.Write("Failed to add reference to BibTeX file.");
+                        }
                         break;
                     case "list":
                         ListReferences(references);
@@ -116,11 +132,10 @@ namespace ReferenceManager
         /// <summary>
         /// Lists all references from the BibTeX file.
         /// </summary>
-        private void ListReferences(List<Reference> references)
+        public void ListReferences(List<Reference> references)
         {
-            _io.Write("Listing references...");
-            _io.Write(references.Count.ToString());
-            // TODO: Implement logic to list references
+            string fileContent = File.ReadAllText(FilePath);
+            _io.Write(fileContent);
         }
 
         /// <summary>
