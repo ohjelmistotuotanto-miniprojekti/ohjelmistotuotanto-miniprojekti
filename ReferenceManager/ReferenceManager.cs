@@ -101,7 +101,6 @@ namespace ReferenceManager
 
             var newArticleReference = new ArticleReference
             {
-                Key= "avain",
                 Author = author,
                 Title = Title,
                 Journal = Journal,
@@ -109,7 +108,6 @@ namespace ReferenceManager
                 Volume = Volume,
                 Pages = Pages,
             };
-
                references.Add(newArticleReference);
 
             

@@ -13,21 +13,10 @@ namespace ReferenceManager
     /// </summary>
     public abstract class Reference
     {
-        private string _key;
-        public string Key
-        {
-            get
-            {
-                return _key;
-            }
-            set
-            {
-                _key = GenerateKey();
-            }
-        }
         public required string Author { get; set; }
         public required string Title { get; set; }
         public required string Year { get; set; }
+        public string Key => GenerateKey();
 
         private string GenerateKey()
         {
