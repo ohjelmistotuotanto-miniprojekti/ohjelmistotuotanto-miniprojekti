@@ -68,7 +68,7 @@ public class UnitTest2
             Volume = "6",
             Pages = "38--46"
         };
-        testReference.ToBibtexFile();
+        var result = testReference.ToBibtexFile();
         Assert.Equal(
             $"@article{{CBH91,\n" +
             $"  author = {{Allan Collins and John Seely Brown and Ann Holum}},\n" +
@@ -77,8 +77,12 @@ public class UnitTest2
             $"  year = {{1991}},\n" +
             $"  volume = {{6}},\n" +
             $"  pages = {{38--46}}\n" +
-            $"}}",
+            $"}}\n\n",
             File.ReadAllText(ReferenceManager.Program.FilePath)
         );
+        Assert.True(
+            result
+        );
+        File.WriteAllText(ReferenceManager.Program.FilePath, string.Empty);
     }
 }

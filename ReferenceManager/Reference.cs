@@ -57,7 +57,7 @@ namespace ReferenceManager
             string reference = ToBibtex();
             if(!string.IsNullOrEmpty(reference)) 
             {
-                outputFile.Write(reference);
+                outputFile.Write(reference + "\n" + "\n");
                 return true;
             }
             else{
