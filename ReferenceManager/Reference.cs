@@ -34,8 +34,15 @@ namespace ReferenceManager
 
         public override string ToBibtex()
         {
-            return "BibTeX";
-            
+            return 
+            $"@article{{{Key},\n" +
+            $"  author = {{{Author}}},\n" +
+            $"  title = {{{Title}}},\n" +
+            $"  journal = {{{Journal}}},\n" +
+            $"  year = {{{Year}}},\n" +
+            $"  volume = {{{Volume}}},\n" +
+            $"  pages = {{{Pages}}}\n" +
+            $"}}";
         }
     }
 }

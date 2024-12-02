@@ -54,9 +54,14 @@ namespace ReferenceManager
                 {
                     case "add":
                         AddJournalArticle(references);
+                        
                         break;
                     case "list":
                         ListReferences(references);
+                        for(int i = 0; i < references.Count; i++)
+                        {
+                            _io.Write(references[i].ToBibtex());
+                        }
                         break;
                     case "help":
                         ShowHelp();
