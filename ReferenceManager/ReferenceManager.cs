@@ -89,7 +89,7 @@ namespace ReferenceManager
             string Pages = _io.Read().Trim();
 
             _io.Write("Do you want to add this article");
-             string confirmation = _io.Read().Trim().ToLower();
+            string confirmation = _io.Read().Trim().ToLower();
 
             if (confirmation != "y")
             {
@@ -108,9 +108,9 @@ namespace ReferenceManager
                 Volume = Volume,
                 Pages = Pages,
             };
-               references.Add(newArticleReference);
+            references.Add(newArticleReference);
 
-            
+
         }
 
         /// <summary>
