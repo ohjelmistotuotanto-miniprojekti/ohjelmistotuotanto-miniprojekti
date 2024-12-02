@@ -35,6 +35,7 @@ namespace ReferenceManager
         public override string ToBibtex()
         {
             return "BibTeX";
+            
         }
     }
 }
