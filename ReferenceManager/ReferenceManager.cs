@@ -73,7 +73,7 @@ namespace ReferenceManager
         /// <summary>
         /// Adds a new journal article to the BibTeX file.
         /// </summary>
-        private void AddJournalArticle(List<Reference> references)
+        public void AddJournalArticle(List<Reference> references)
         {
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
@@ -111,7 +111,6 @@ namespace ReferenceManager
                references.Add(newArticleReference);
 
             
-            // TODO: Implement logic to add a new journal article
         }
 
         /// <summary>
