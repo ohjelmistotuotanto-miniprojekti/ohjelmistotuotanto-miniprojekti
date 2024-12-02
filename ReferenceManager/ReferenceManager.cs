@@ -78,9 +78,32 @@ namespace ReferenceManager
         {
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
+            _io.Write("Title: ");
+            string Title = _io.Read().Trim();
+            _io.Write("Journal: ");
+            string Journal = _io.Read().Trim();
+            _io.Write("Year: ");
+            string Year = _io.Read().Trim();
+            _io.Write("Volume: ");
+            string Volume = _io.Read().Trim();
+            _io.Write("Pages: ");
+            string Pages = _io.Read().Trim();
+
+            
+
             _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
         }
+
+        /*
+         * Key = "CBH91",
+                Author = "Allan Collins and John Seely Brown and Ann Holum",
+                Title = "Cognitive apprenticeship: making thinking visible",
+                Journal = "American Educator",
+                Year = "1991",
+                Volume = "6",
+                Pages = "38--46"
+         */
 
         /// <summary>
         /// Lists all references from the BibTeX file.
