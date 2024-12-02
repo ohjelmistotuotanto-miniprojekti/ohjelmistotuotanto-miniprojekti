@@ -35,7 +35,6 @@ namespace ReferenceManager
 
             var testReference = new ArticleReference
             {
-                Key = "CBH91",
                 Author = "Allan Collins and John Seely Brown and Ann Holum",
                 Title = "Cognitive apprenticeship: making thinking visible",
                 Journal = "American Educator",
@@ -94,16 +93,6 @@ namespace ReferenceManager
             _io.Write("Adding journal article...");
             // TODO: Implement logic to add a new journal article
         }
-
-        /*
-         * Key = "CBH91",
-                Author = "Allan Collins and John Seely Brown and Ann Holum",
-                Title = "Cognitive apprenticeship: making thinking visible",
-                Journal = "American Educator",
-                Year = "1991",
-                Volume = "6",
-                Pages = "38--46"
-         */
 
         /// <summary>
         /// Lists all references from the BibTeX file.

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using FluentAssertions.Equivalency;
+
 namespace ReferenceManager
 {
     /// <summary>
@@ -11,10 +13,29 @@ namespace ReferenceManager
     /// </summary>
     public abstract class Reference
     {
-        public required string Key { get; set; }
+        private string _key;
+        public string Key
+        {
+            get
+            {
+                return _key;
+            }
+            set
+            {
+                _key = GenerateKey();
+            }
+        }
         public required string Author { get; set; }
         public required string Title { get; set; }
         public required string Year { get; set; }
+
+        private string GenerateKey()
+        {
+            int index = Author.IndexOf(" ");
+            string firstname = Author.Substring(0, index);
+            string key = firstname + Year + Title[0];
+            return key;
+        }
 
         /// <summary>
         /// Method for generating BibTeX
