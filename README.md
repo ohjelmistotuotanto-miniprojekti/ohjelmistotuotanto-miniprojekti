@@ -2,6 +2,20 @@
 
 A simple C# application for managing BibTeX references.
 
+# Project backlog
+https://docs.google.com/spreadsheets/d/1109rdzZxVDn1R0a3zG7uqhMdJKA6VQSDgxw8KljecDI
+
+# Definition of done
+Sprint 1:
+1. CI/CD environment for automated unit testing 
+2. Ability to add journal articles
+    1. System must allow users to add journal articles as references
+    2. System asks confirmation about operation
+    3. System gives a infomessage about success /failure
+3. Generate BibTex file for LaTeX documents
+    1. The system must provide functionality to generate a BibTeX-formatted file from the references for use in LaTeX documents.
+    2. System will print the BibTeX -formatted input
+    3. System gives a infomessage about success /failure
 
 ## Developer / Collaborator instructions / Getting started
 
