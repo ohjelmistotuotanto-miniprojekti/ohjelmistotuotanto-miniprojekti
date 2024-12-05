@@ -41,7 +41,7 @@ namespace ReferenceManager
                 switch (command)
                 {
                     case "add":
-                        AddJournalArticle(references);
+                        AddReference(references);
                         break;
                     case "list":
                         ListReferences(references);
@@ -56,6 +56,28 @@ namespace ReferenceManager
                         _io.Write("Unknown command. Type 'help' to see available commands.");
                         break;
                 }
+            }
+        }
+
+        public void AddReference(List<Reference> references)
+        {
+            _io.Write("Select article type:");
+            _io.Write("1. Article");
+            _io.Write("2. Inproceedings");
+
+            string choice = _io.Read().Trim();
+
+            switch (choice)
+            {
+                case "1":
+                    AddJournalArticle(references);
+                    break;
+                case "2":
+                    AddInProceedings(references);
+                    break;
+                default:
+                    _io.Write("Invalid choice. Returning to main menu.");
+                    break;
             }
         }
 
@@ -110,6 +132,47 @@ namespace ReferenceManager
 
         }
 
+        public void AddInProceedings(List<Reference> references)
+        {
+            _io.Write("Adding an inproceedings article...");
+
+            _io.Write("Authors: ");
+            string author = _io.Read().Trim();
+            _io.Write("Title: ");
+            string title = _io.Read().Trim();
+            _io.Write("Year: ");
+            string year = _io.Read().Trim();
+            _io.Write("Book Title: ");
+            string bookTitle = _io.Read().Trim();
+
+            _io.Write("Do you want to add this inproceedings article (y/n)?");
+            string confirmation = _io.Read().Trim().ToLower();
+
+            if (confirmation != "y")
+            {
+                _io.Write("Operation cancelled by the user.");
+                return;
+            }
+
+            var newInProceedings = new InProceedingsReference
+            {
+                Author = author,
+                Title = title,
+                BookTitle = bookTitle,
+                Year = year,
+            };
+            references.Add(newInProceedings);
+
+            if (newInProceedings.ToBibtexFile())
+            {
+                _io.Write("Inproceedings article added successfully.");
+            }
+            else
+            {
+                _io.Write("Failed to add inproceedings article to BibTeX file.");
+            }
+        }
+
         /// <summary>
         /// Lists all references from the BibTeX file.
         /// </summary>
@@ -124,14 +187,13 @@ namespace ReferenceManager
             if (File.Exists(FilePath))
             {
                 _io.Write("\nReferences from file:");
-                string fileContent = File.ReadAllText(FilePath);
-                if (!string.IsNullOrWhiteSpace(fileContent))
+                using (var reader = new StreamReader(FilePath))
                 {
-                    _io.Write(fileContent);
-                }
-                else
-                {
-                    _io.Write("No references found in file.");
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        _io.Write(line);
+                    }
                 }
             }
             else
