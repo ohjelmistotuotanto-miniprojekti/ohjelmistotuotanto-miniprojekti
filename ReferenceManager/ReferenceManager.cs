@@ -1,4 +1,7 @@
 using System;
+using System.ComponentModel.Design;
+
+using Newtonsoft.Json;
 
 namespace ReferenceManager
 {
@@ -87,7 +90,7 @@ namespace ReferenceManager
         public void AddJournalArticle(List<Reference> references)
         {
             _io.Write("Authors: ");
-            string author = _io.Read().Trim();
+            string author = GetAuthors();
             _io.Write("Title: ");
             string Title = _io.Read().Trim();
             _io.Write("Journal: ");
@@ -171,6 +174,39 @@ namespace ReferenceManager
             {
                 _io.Write("Failed to add inproceedings article to BibTeX file.");
             }
+        }
+
+        /// <summary>
+        /// Collects authors from the user one author at time
+        /// </summary>
+        /// <returns> A string of authors</returns>
+        public string GetAuthors()
+        {
+            List<string> authors = new List<string>();
+            while (true)
+            {
+                _io.Write("Enter author name, at least one author required:");
+                string author = _io.Read().Trim();
+
+                if (string.IsNullOrEmpty(author))
+                {
+                    if (authors.Count == 0)
+                    {
+                        _io.Write("At least one author is Required. Please add author");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    authors.Add(author);
+                }
+            }
+
+                return string.Join(", ", authors);
+            
         }
 
         /// <summary>
