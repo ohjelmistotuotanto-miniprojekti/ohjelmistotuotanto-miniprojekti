@@ -1,4 +1,5 @@
 using ArticleReference = ReferenceManager.ArticleReference;
+using InProceedingsReference = ReferenceManager.InProceedingsReference;
 namespace Reference.Tests;
 using Xunit;
 
@@ -52,6 +53,100 @@ public class UnitTest2
         string result = testReference.ToBibtex();
         Assert.Equal("", result);
     }
+
+    [Fact]
+    public void TestInProceedingsToBibtex()
+    {
+        var testReference = new InProceedingsReference
+        {
+            Author = "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+            Year = "2011",
+            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+        };
+        string result = testReference.ToBibtex();
+        Assert.Equal(
+            $"@inproceedings{{Vihavainen2011E,\n" +
+            $"  author = {{Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti}},\n" +
+            $"  title = {{Extreme Apprenticeship Method in Teaching Programming for Beginners.}},\n" +
+            $"  booktitle = {{SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education}},\n" +
+            $"  year = {{2011}}\n" +
+            $"}}",
+            result);
+    }
+
+    [Fact]
+    public void TestInProceedingsToBibtexFail()
+    {
+        var testReference = new InProceedingsReference
+        {
+            Author = "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+            Year = "",
+            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+        };
+        string result = testReference.ToBibtex();
+        Assert.Equal("", result);
+    }
+
+
+    [Fact]
+    public void TestInProceedingsToBibtexFile()
+    {
+        string tempFilePath = Path.GetTempFileName();
+        ReferenceManager.Program.FilePath = tempFilePath;
+
+        try
+        {
+            var reference = new InProceedingsReference
+            {
+                Author = "Vihavainen, Arto",
+                Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+                Year = "2011",
+                BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+            };
+
+            Assert.True(reference.ToBibtexFile(), "Failed to write reference to file.");
+
+            string fileContent = File.ReadAllText(tempFilePath).Trim();
+            string normalizedFileContent = fileContent.Replace("\r\n", "\n");
+
+            string expectedBibtex =
+                $"@inproceedings{{Vihavainen2011E,\n" +
+                $"  author = {{Vihavainen, Arto}},\n" +
+                $"  title = {{Extreme Apprenticeship Method in Teaching Programming for Beginners.}},\n" +
+                $"  booktitle = {{SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education}},\n" +
+                $"  year = {{2011}}\n" +
+                $"}}";
+
+            string normalizedExpectedBibtex = expectedBibtex.Replace("\r\n", "\n");
+
+            Assert.Equal(normalizedExpectedBibtex, normalizedFileContent);
+        }
+        finally
+        {
+            if (File.Exists(tempFilePath))
+            {
+                File.Delete(tempFilePath);
+            }
+        }
+    }
+
+
+    [Fact]
+    public void TestKeyGeneration()
+    {
+        var testReference = new InProceedingsReference
+        {
+            Author = "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+            Year = "2011",
+            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+        };
+
+        Assert.Equal("Vihavainen2011E", testReference.Key);
+    }
+
     /*
     [Fact]
     public void TestToBibtexFile()
