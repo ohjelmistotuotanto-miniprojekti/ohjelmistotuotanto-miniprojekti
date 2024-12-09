@@ -20,9 +20,16 @@ namespace ReferenceManager.Tests
                 .Returns("Sample Title")   // Title
                 .Returns("Tech Journal")   // Journal
                 .Returns("2024")           // Year
+                .Returns("")               // Month
                 .Returns("12")             // Volume
+                .Returns("")               // Number
                 .Returns("34-56")          // Pages
+                .Returns("")               // Doi
+                .Returns("")               // Note
+                .Returns("")               // key
                 .Returns("y");             // Confirmation
+
+                                Author = author,
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
@@ -56,8 +63,19 @@ namespace ReferenceManager.Tests
             mockIO.SetupSequence(io => io.Read())
                 .Returns("Vihavainen, Arto") // Author
                 .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
-                .Returns("2011")            // Year
                 .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")  // Editor
+                .Returns("")  // Volume
+                .Returns("")  // Number
+                .Returns("")  // Series
+                .Returns("")  // Pages
+                .Returns("")  // Address
+                .Returns("")  // Month
+                .Returns("")  // Organization
+                .Returns("")  // Publisher
+                .Returns("")  // Note
+                .Returns("")  // key
                 .Returns("y");              // Confirmation
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
@@ -79,6 +97,7 @@ namespace ReferenceManager.Tests
             mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
         }
 
+
         [Fact]
         public void Test_UserCancelsJournalArticle()
         {
@@ -92,8 +111,13 @@ namespace ReferenceManager.Tests
                 .Returns("Sample Title")   // Title
                 .Returns("Tech Journal")   // Journal
                 .Returns("2024")           // Year
-                .Returns("12")             // Volume
-                .Returns("34-56")          // Pages
+                .Returns("")
+                .Returns("")             // Volume
+                .Returns("")
+                .Returns("")          // Pages
+                .Returns("")
+                .Returns("")
+                .Returns("")
                 .Returns("n");             // Confirmation ('n' = user cancels)
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
@@ -119,8 +143,19 @@ namespace ReferenceManager.Tests
             mockIO.SetupSequence(io => io.Read())
                 .Returns("Vihavainen, Arto") // Author
                 .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
-                .Returns("2011")            // Year
                 .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
                 .Returns("n");              // Confirmation ('n' = user cancels)
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
@@ -155,8 +190,19 @@ namespace ReferenceManager.Tests
                     "2",   // InProceedings type
                     "Vihavainen, Arto", // Author
                     "Extreme Apprenticeship Method in Teaching Programming for Beginners.", // Title
-                    "2011", // Year
                     "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", // BookTitle
+                    "2011", // Year
+                    "", //month
+                    "", //editor
+                    "", //volume
+                    "", //Number
+                    "", // series
+                    "", // pages
+                    "", // address
+                    "", // organization
+                    "", // publisher
+                    "", // note
+                    "", // key
                     "y",    // Confirm addition
                     "list", // List command
                     "exit"  // Exit
