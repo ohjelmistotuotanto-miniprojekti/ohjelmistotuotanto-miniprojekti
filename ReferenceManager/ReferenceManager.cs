@@ -3,6 +3,8 @@ using System.ComponentModel.Design;
 
 using Newtonsoft.Json;
 
+using FluentAssertions.Equivalency;
+
 namespace ReferenceManager
 {
     /// <summary>
@@ -85,96 +87,164 @@ namespace ReferenceManager
         }
 
         /// <summary>
+        /// Adds a mandatory field to the user input.
+        /// </summary>
+        public string GiveUserInputFromMandatoryField(string field)
+        {
+            string input;
+            do
+            {
+                _io.Write(field + "*: ");
+                input = _io.Read().Trim();
+                if (string.IsNullOrEmpty(input))
+                {
+                    _io.Write(field + " cannot be empty. Please enter again.");
+                }
+            } while (string.IsNullOrEmpty(input));
+
+            return input;
+        }
+
+        /// <summary>
         /// Adds a new journal article to the BibTeX file.
         /// </summary>
-        public void AddJournalArticle(List<Reference> references)
-        {
-            _io.Write("Authors");
-            string author = GetAuthors();
-            _io.Write("Title: ");
-            string Title = _io.Read().Trim();
-            _io.Write("Journal: ");
-            string Journal = _io.Read().Trim();
-            _io.Write("Year: ");
-            string Year = _io.Read().Trim();
-            _io.Write("Volume: ");
-            string Volume = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string Pages = _io.Read().Trim();
+public void AddJournalArticle(List<Reference> references)
+{
+    _io.Write("mandatory fields are followed by *");
+    string author = GetAuthors(); // Resolving conflict to keep `GetAuthors` for authors
+    string title = GiveUserInputFromMandatoryField("Title");
+    string journal = GiveUserInputFromMandatoryField("Journal");
+    string year = GiveUserInputFromMandatoryField("Year");
+    _io.Write("Month: ");
+    string month = _io.Read().Trim();
+    _io.Write("Volume: ");
+    string volume = _io.Read().Trim();
+    _io.Write("Number: ");
+    string number = _io.Read().Trim();
+    _io.Write("Pages: ");
+    string pages = _io.Read().Trim();
+    _io.Write("Doi: ");
+    string doi = _io.Read().Trim();
+    _io.Write("Note: ");
+    string note = _io.Read().Trim();
+    _io.Write("Key: ");
+    string key = _io.Read().Trim();
 
-            _io.Write("Do you want to add this article (y/n)?");
-            string confirmation = _io.Read().Trim().ToLower();
+    _io.Write("Do you want to add this article (y/n)?");
+    string confirmation = _io.Read().Trim().ToLower();
 
-            if (confirmation != "y")
-            {
-                _io.Write("Operation cancelled by the user.");
-                return;
-            }
-            _io.Write("Adding journal article...");
+    if (confirmation != "y")
+    {
+        _io.Write("Operation cancelled by the user.");
+        return;
+    }
+    _io.Write("Adding journal article...");
 
+    var newArticleReference = new ArticleReference
+    {
+        Author = author,
+        Title = title,
+        Journal = journal,
+        Year = year,
+        Month = month,
+        Volume = volume,
+        Number = number,
+        Pages = pages,
+        Doi = doi,
+        Note = note,
+        ReferenceKey = key
+    };
+    references.Add(newArticleReference);
 
-            var newArticleReference = new ArticleReference
-            {
-                Author = author,
-                Title = Title,
-                Journal = Journal,
-                Year = Year,
-                Volume = Volume,
-                Pages = Pages,
-            };
-            references.Add(newArticleReference);
-
-            if (newArticleReference.ToBibtexFile())
-            {
-                _io.Write("Journal article added successfully.");
-            }
-            else
-            {
-                _io.Write("Failed to add reference to BibTeX file.");
-            }
+    if (newArticleReference.ToBibtexFile())
+    {
+        _io.Write("Journal article added successfully.");
+    }
+    else
+    {
+        _io.Write("Failed to add reference to BibTeX file.");
+    }
+}
 
         }
+public void AddInProceedings(List<Reference> references)
+{
+    _io.Write("Adding an inproceedings article...");
+    _io.Write("mandatory fields are followed by *");
 
-        public void AddInProceedings(List<Reference> references)
-        {
-            _io.Write("Adding an inproceedings article...");
+    // Use GetAuthors for multiple authors
+    string author = GetAuthors(); 
 
-            _io.Write("Authors ");
-            string author = GetAuthors();
-            _io.Write("Title: ");
-            string title = _io.Read().Trim();
-            _io.Write("Year: ");
-            string year = _io.Read().Trim();
-            _io.Write("Book Title: ");
-            string bookTitle = _io.Read().Trim();
+    // Use GiveUserInputFromMandatoryField for other mandatory fields
+    string title = GiveUserInputFromMandatoryField("Title");
+    string bookTitle = GiveUserInputFromMandatoryField("Book Title");
+    string year = GiveUserInputFromMandatoryField("Year");
 
-            _io.Write("Do you want to add this inproceedings article (y/n)?");
-            string confirmation = _io.Read().Trim().ToLower();
+    // Optional fields
+    _io.Write("Month: ");
+    string month = _io.Read().Trim();
+    _io.Write("Editor: ");
+    string editor = _io.Read().Trim();
+    _io.Write("Volume: ");
+    string volume = _io.Read().Trim();
+    _io.Write("Number: ");
+    string number = _io.Read().Trim();
+    _io.Write("Series: ");
+    string series = _io.Read().Trim();
+    _io.Write("Pages: ");
+    string pages = _io.Read().Trim();
+    _io.Write("Address: ");
+    string address = _io.Read().Trim();
+    _io.Write("Organization: ");
+    string organization = _io.Read().Trim();
+    _io.Write("Publisher: ");
+    string publisher = _io.Read().Trim();
+    _io.Write("Note: ");
+    string note = _io.Read().Trim();
+    _io.Write("Key: ");
+    string key = _io.Read().Trim();
 
-            if (confirmation != "y")
-            {
-                _io.Write("Operation cancelled by the user.");
-                return;
-            }
+    _io.Write("Do you want to add this inproceedings article (y/n)?");
+    string confirmation = _io.Read().Trim().ToLower();
 
-            var newInProceedings = new InProceedingsReference
-            {
-                Author = author,
-                Title = title,
-                BookTitle = bookTitle,
-                Year = year,
-            };
-            references.Add(newInProceedings);
+    if (confirmation != "y")
+    {
+        _io.Write("Operation cancelled by the user.");
+        return;
+    }
 
-            if (newInProceedings.ToBibtexFile())
-            {
-                _io.Write("Inproceedings article added successfully.");
-            }
-            else
-            {
-                _io.Write("Failed to add inproceedings article to BibTeX file.");
-            }
-        }
+    // Create a new inproceedings reference
+    var newInProceedings = new InProceedingsReference
+    {
+        Author = author,
+        Title = title,
+        BookTitle = bookTitle,
+        Year = year,
+        Editor = editor,
+        Volume = volume,
+        Number = number,
+        Series = series,
+        Pages = pages,
+        Address = address,
+        Month = month,
+        Organization = organization,
+        Publisher = publisher,
+        Note = note,
+        ReferenceKey = key
+    };
+    references.Add(newInProceedings);
+
+    // Save the new reference to the BibTeX file
+    if (newInProceedings.ToBibtexFile())
+    {
+        _io.Write("Inproceedings article added successfully.");
+    }
+    else
+    {
+        _io.Write("Failed to add inproceedings article to BibTeX file.");
+    }
+}
+
 
         /// <summary>
         /// Collects authors from the user one author at time
@@ -225,7 +295,7 @@ namespace ReferenceManager
                 _io.Write("\nReferences from file:");
                 using (var reader = new StreamReader(FilePath))
                 {
-                    string line;
+                    string? line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         _io.Write(line);
