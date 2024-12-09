@@ -12,10 +12,38 @@ namespace ReferenceManager
     /// </summary>
     public abstract class Reference
     {
-        public string Author { get; set; }
-        public string Title { get; set; }
+        //public string Author { get; set; }
 
-        private string _year;
+        private string _author = "";
+        public string Author
+        {
+            get => _author;
+            set
+            {
+                _author = value;
+                // Validation
+            }
+        }
+
+        //public string Title { get; set; }
+
+        private string _title = "";
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException("You must input a title.");
+                }
+                _title = value;
+
+                // Validation
+            }
+        }
+
+        private string _year = "";
         public string Year
         {
             get => _year;
@@ -71,9 +99,44 @@ namespace ReferenceManager
     /// </summary>
     public class ArticleReference : Reference
     {
-        public required string Journal { get; set; }
-        public required string Volume { get; set; }
-        public required string Pages { get; set; }
+        //public string Journal { get; set; }
+
+        private string _journal = "";
+        public string Journal
+        {
+            get => _journal;
+            set
+            {
+                _journal = value;
+                // Validation
+            }
+        }
+
+        //public string Volume { get; set; }
+
+        private string _volume = "";
+        public string Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                // Validation
+            }
+        }
+
+        //public string Pages { get; set; }
+
+        private string _pages = "";
+        public string Pages
+        {
+            get => _pages;
+            set
+            {
+                _pages = value;
+                // Validation
+            }
+        }
 
         public override string ToBibtex()
         {

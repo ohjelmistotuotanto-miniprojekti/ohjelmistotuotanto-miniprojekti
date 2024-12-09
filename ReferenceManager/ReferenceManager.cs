@@ -90,17 +90,38 @@ namespace ReferenceManager
 
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
-            _io.Write("Title: ");
-            string Title = _io.Read().Trim();
+            articleReference.Author = author;
+
+            while (true)
+            {
+                _io.Write("Title: ");
+                string Title = _io.Read().Trim();
+                try
+                {
+                    articleReference.Title = Title;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Journal: ");
             string Journal = _io.Read().Trim();
+            articleReference.Journal = Journal;
+
             _io.Write("Year: ");
             string Year = _io.Read().Trim();
-            _io.Write("Volume: ");
             articleReference.Year = Year;
+
+            _io.Write("Volume: ");
             string Volume = _io.Read().Trim();
+            articleReference.Year = Volume;
+
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
+            articleReference.Year = Pages;
 
             _io.Write("Do you want to add this article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
@@ -112,7 +133,7 @@ namespace ReferenceManager
             }
             _io.Write("Adding journal article...");
 
-
+            /*
             var newArticleReference = new ArticleReference
             {
                 Author = author,
@@ -131,7 +152,7 @@ namespace ReferenceManager
             else
             {
                 _io.Write("Failed to add reference to BibTeX file.");
-            }
+            }*/
 
         }
 
@@ -139,7 +160,7 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
 
-            var InproceepingsReference = new InProceedingsReference();
+            //var InproceepingsReference = new InProceedingsReference();
 
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
@@ -147,7 +168,7 @@ namespace ReferenceManager
             string title = _io.Read().Trim();
             _io.Write("Year: ");
             string year = _io.Read().Trim();
-            InproceepingsReference.Year = Year
+            //InproceepingsReference.Year = year;
 
             _io.Write("Book Title: ");
             string bookTitle = _io.Read().Trim();
