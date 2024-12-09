@@ -103,7 +103,12 @@ namespace ReferenceManager
                 }
                 catch (Exception ex)
                 {
-                    _io.Write(ex.Message);
+                    string message = ex.Message;
+                    int startIndex = message.IndexOf('\'');
+                    int length = message.LastIndexOf('\'') - startIndex + 1;
+                    string result = message.Substring(startIndex, length);
+
+                    _io.Write(result.Replace("'", ""));
                 }
             }
 
@@ -111,9 +116,20 @@ namespace ReferenceManager
             string Journal = _io.Read().Trim();
             articleReference.Journal = Journal;
 
-            _io.Write("Year: ");
-            string Year = _io.Read().Trim();
-            articleReference.Year = Year;
+            while (true)
+            {
+                _io.Write("Year: ");
+                string Year = _io.Read().Trim();
+                try
+                {
+                    articleReference.Year = Year;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
 
             _io.Write("Volume: ");
             string Volume = _io.Read().Trim();

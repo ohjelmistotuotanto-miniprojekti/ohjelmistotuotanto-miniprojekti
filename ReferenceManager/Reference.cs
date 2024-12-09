@@ -12,8 +12,6 @@ namespace ReferenceManager
     /// </summary>
     public abstract class Reference
     {
-        //public string Author { get; set; }
-
         private string _author = "";
         public string Author
         {
@@ -25,8 +23,6 @@ namespace ReferenceManager
             }
         }
 
-        //public string Title { get; set; }
-
         private string _title = "";
         public string Title
         {
@@ -35,11 +31,9 @@ namespace ReferenceManager
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException("You must input a title.");
+                    throw new ArgumentNullException("Title is required.");
                 }
                 _title = value;
-
-                // Validation
             }
         }
 
@@ -49,11 +43,17 @@ namespace ReferenceManager
             get => _year;
             set
             {
-                _year = value;
-                // Validation
+                if (int.TryParse(value, out int year) && year >=1 && year <= 9999)
+                {
+                    _year = value;
+                } else
+                {
+                    throw new ArgumentException("Invalid year");
+                }
             }
         }
-        public string Key => GenerateKey();
+
+public string Key => GenerateKey();
 
         private string GenerateKey()
         {
