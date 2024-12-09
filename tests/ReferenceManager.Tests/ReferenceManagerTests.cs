@@ -134,6 +134,56 @@ namespace ReferenceManager.Tests
             Assert.Empty(references); // Ensure no references are added
             mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
         }
+
+        [Fact]
+        public void TestGetOneAuthor()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+
+            // Simulate user input: "John Doe" followed by an empty input to end the loop
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("John Doe") // Author
+                .Returns("");        // End input
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object);
+
+            // Act
+            var authors = program.GetAuthors();
+
+            // Assert
+            Assert.Equal("John Doe", authors); // Verify returned authors string
+
+            // Verify that the correct prompts were written
+            mockIO.Verify(io => io.Write("Enter author name, at least one author required:"), Times.Exactly(2));
+        }
+
+        [Fact]
+        public void Test_GetAuthorsWithEmptyInputFirst()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+
+            // Simulate user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("")        // Empty input
+                .Returns("John Doe") // Valid input
+                .Returns("");       // End input
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object);
+
+            // Act
+            var authors = program.GetAuthors();
+
+            // Assert
+            Assert.Equal("John Doe", authors); // Verify returned authors string
+            mockIO.Verify(io => io.Write("At least one author is Required. Please add author"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter author name, at least one author required:"), Times.Exactly(3));
+        }
+
     }
 
     public class EndToEndTests

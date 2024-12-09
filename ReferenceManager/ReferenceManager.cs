@@ -89,7 +89,7 @@ namespace ReferenceManager
         /// </summary>
         public void AddJournalArticle(List<Reference> references)
         {
-            _io.Write("Authors: ");
+            _io.Write("Authors");
             string author = GetAuthors();
             _io.Write("Title: ");
             string Title = _io.Read().Trim();
@@ -139,8 +139,8 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
 
-            _io.Write("Authors: ");
-            string author = _io.Read().Trim();
+            _io.Write("Authors ");
+            string author = GetAuthors();
             _io.Write("Title: ");
             string title = _io.Read().Trim();
             _io.Write("Year: ");
