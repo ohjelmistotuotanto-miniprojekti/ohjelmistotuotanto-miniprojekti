@@ -15,7 +15,9 @@ namespace ReferenceManager
         public required string Author { get; set; }
         public required string Title { get; set; }
         public required string Year { get; set; }
-        public string Key => GenerateKey();
+        public string? ReferenceKey { get; set; }
+
+        public string Key => ReferenceKey is not null && !string.IsNullOrWhiteSpace(ReferenceKey) ? ReferenceKey : GenerateKey();
 
         private string GenerateKey()
         {

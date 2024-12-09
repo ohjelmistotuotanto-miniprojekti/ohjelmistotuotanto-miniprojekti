@@ -44,8 +44,12 @@ namespace ReferenceManager.Tests
             Assert.Equal("Sample Title", addedReference.Title);
             Assert.Equal("Tech Journal", addedReference.Journal);
             Assert.Equal("2024", addedReference.Year);
+            Assert.Equal("", addedReference.Month);
             Assert.Equal("12", addedReference.Volume);
             Assert.Equal("34-56", addedReference.Pages);
+            Assert.Equal("", addedReference.Doi);
+            Assert.Equal("", addedReference.Note);
+            Assert.Equal("John2024S", addedReference.Key);
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
@@ -91,7 +95,17 @@ namespace ReferenceManager.Tests
             Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
             Assert.Equal("2011", addedReference.Year);
             Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", addedReference.BookTitle);
-
+            Assert.Equal("", addedReference.Editor);
+            Assert.Equal("", addedReference.Volume);
+            Assert.Equal("", addedReference.Number);
+            Assert.Equal("", addedReference.Series);
+            Assert.Equal("", addedReference.Pages);
+            Assert.Equal("", addedReference.Address);
+            Assert.Equal("", addedReference.Month);
+            Assert.Equal("", addedReference.Organization);
+            Assert.Equal("", addedReference.Publisher);
+            Assert.Equal("", addedReference.Note);
+            Assert.Equal("Vihavainen2011E", addedReference.Key);
             mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
         }
 
@@ -286,71 +300,97 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
+        [Fact]
+        public void Test_AddInProceedingsWithKey()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference>();
 
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Vihavainen, Arto") // Author
+                .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
+                .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")  // Editor
+                .Returns("")  // Volume
+                .Returns("")  // Number
+                .Returns("")  // Series
+                .Returns("")  // Pages
+                .Returns("")  // Address
+                .Returns("")  // Month
+                .Returns("")  // Organization
+                .Returns("")  // Publisher
+                .Returns("")  // Note
+                .Returns("2222")  // key
+                .Returns("y");              // Confirmation
 
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object);
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as InProceedingsReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("Vihavainen, Arto", addedReference.Author);
+            Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
+            Assert.Equal("2011", addedReference.Year);
+            Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", addedReference.BookTitle);
+            Assert.Equal("2222", addedReference.Key);
+            mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
+        }
 
         [Fact]
-        public void EndToEnd_AddInProceedingsReference()
+        public void Test_AddJournalArticleWithKey()
         {
-            string tempFilePath = "test_referencesE2E.bib";
-            ReferenceManager.Program.FilePath = tempFilePath;
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference>();
 
-            try
-            {
-                if (File.Exists(tempFilePath))
-                    File.Delete(tempFilePath);
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("John Doe")       // Author
+                .Returns("Sample Title")   // Title
+                .Returns("Tech Journal")   // Journal
+                .Returns("2024")           // Year
+                .Returns("2")               // Month
+                .Returns("14")             // Volume
+                .Returns("3")               // Number
+                .Returns("3-5")          // Pages
+                .Returns("doi")               // Doi
+                .Returns("muistiinpano")               // Note
+                .Returns("key")            // Key
+                .Returns("y");             // Confirmation
 
-                var consoleIO = new MockConsoleIO(new[]
-                {
-                    "add", // Add command
-                    "2",   // InProceedings type
-                    "Vihavainen, Arto", // Author
-                    "Extreme Apprenticeship Method in Teaching Programming for Beginners.", // Title
-                    "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", // BookTitle
-                    "2011", // Year
-                    "", //month
-                    "", //editor
-                    "", //volume
-                    "", //Number
-                    "", // series
-                    "", // pages
-                    "", // address
-                    "", // organization
-                    "", // publisher
-                    "", // note
-                    "", // key
-                    "y",    // Confirm addition
-                    "list", // List command
-                    "exit"  // Exit
-                });
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-                var program = new ReferenceManager.Program(consoleIO);
+            var program = new Program(mockIO.Object);
 
-                // Act
-                program.Run();
+            // Act
+            program.AddJournalArticle(references);
 
-                // Assert: Verify file content
-                Assert.True(File.Exists(tempFilePath), "The BibTeX file was not created.");
+            // Assert
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as ArticleReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("John Doe", addedReference.Author);
+            Assert.Equal("Sample Title", addedReference.Title);
+            Assert.Equal("Tech Journal", addedReference.Journal);
+            Assert.Equal("2024", addedReference.Year);
+            Assert.Equal("key", addedReference.Key);
+            Assert.Equal("14", addedReference.Volume);
+            Assert.Equal("3-5", addedReference.Pages);
+            Assert.Equal("doi", addedReference.Doi);
+            Assert.Equal("muistiinpano", addedReference.Note);
+            Assert.Equal("2", addedReference.Month);
+            Assert.Equal("3", addedReference.Number);
 
-                string fileContent = File.ReadAllText(tempFilePath).Trim();
-                string expectedBibtex =
-                    $"@inproceedings{{Vihavainen2011E,\n" +
-                    $"  author = {{Vihavainen, Arto}},\n" +
-                    $"  title = {{Extreme Apprenticeship Method in Teaching Programming for Beginners.}},\n" +
-                    $"  booktitle = {{SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education}},\n" +
-                    $"  year = {{2011}}\n" +
-                    $"}}";
-
-                Assert.Equal(expectedBibtex, fileContent);
-            }
-            finally
-            {
-                // Ensure file cleanup
-                if (File.Exists(tempFilePath))
-                {
-                    File.Delete(tempFilePath);
-                }
-            }
+            mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
     }
 

@@ -149,7 +149,7 @@ namespace ReferenceManager
                 Pages = pages,
                 Doi = doi,
                 Note = note,
-                //Key = key TODO
+                ReferenceKey = key
             };
             references.Add(newArticleReference);
 
@@ -221,7 +221,7 @@ namespace ReferenceManager
                 Organization = organization,
                 Publisher = publisher,
                 Note = note,
-                //Key = , TODO
+                ReferenceKey = key
             };
             references.Add(newInProceedings);
 
