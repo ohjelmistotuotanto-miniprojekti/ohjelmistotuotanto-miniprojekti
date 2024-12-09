@@ -12,9 +12,19 @@ namespace ReferenceManager
     /// </summary>
     public abstract class Reference
     {
-        public required string Author { get; set; }
-        public required string Title { get; set; }
-        public required string Year { get; set; }
+        public string Author { get; set; }
+        public string Title { get; set; }
+
+        private string _year;
+        public string Year
+        {
+            get => _year;
+            set
+            {
+                _year = value;
+                // Validation
+            }
+        }
         public string Key => GenerateKey();
 
         private string GenerateKey()

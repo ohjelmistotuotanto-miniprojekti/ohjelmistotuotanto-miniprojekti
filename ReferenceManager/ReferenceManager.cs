@@ -86,6 +86,8 @@ namespace ReferenceManager
         /// </summary>
         public void AddJournalArticle(List<Reference> references)
         {
+            var articleReference = new ArticleReference();
+
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
             _io.Write("Title: ");
@@ -95,6 +97,7 @@ namespace ReferenceManager
             _io.Write("Year: ");
             string Year = _io.Read().Trim();
             _io.Write("Volume: ");
+            articleReference.Year = Year;
             string Volume = _io.Read().Trim();
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
@@ -136,12 +139,16 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
 
+            var InproceepingsReference = new InProceedingsReference();
+
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
             _io.Write("Title: ");
             string title = _io.Read().Trim();
             _io.Write("Year: ");
             string year = _io.Read().Trim();
+            InproceepingsReference.Year = Year
+
             _io.Write("Book Title: ");
             string bookTitle = _io.Read().Trim();
 
