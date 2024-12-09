@@ -131,8 +131,6 @@ namespace ReferenceManager
             string month = _io.Read().Trim();
             _io.Write("Volume: ");
             string volume = _io.Read().Trim();
-            _io.Write("Number: ");
-            string number = _io.Read().Trim();
             _io.Write("Pages: ");
             string pages = _io.Read().Trim();
             _io.Write("Doi: ");
@@ -249,8 +247,6 @@ namespace ReferenceManager
             string editor = _io.Read().Trim();
             _io.Write("Volume: ");
             string volume = _io.Read().Trim();
-            _io.Write("Number: ");
-            string number = _io.Read().Trim();
             _io.Write("Series: ");
             string series = _io.Read().Trim();
             _io.Write("Pages: ");
