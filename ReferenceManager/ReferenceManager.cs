@@ -205,8 +205,8 @@ namespace ReferenceManager
                 }
             }
 
-                return string.Join(", ", authors);
-            
+            return string.Join(", ", authors);
+
         }
 
         /// <summary>
