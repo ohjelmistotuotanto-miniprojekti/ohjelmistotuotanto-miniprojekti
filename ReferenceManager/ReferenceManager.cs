@@ -107,11 +107,26 @@ namespace ReferenceManager
         /// </summary>
         public void AddJournalArticle(List<Reference> references)
         {
+            var articleReference = new ArticleReference();
             _io.Write("mandatory fields are followed by *");
             string author = GiveUserInputFromMandatoryField("Authors");
             string title = GiveUserInputFromMandatoryField("Title");
             string journal = GiveUserInputFromMandatoryField("Journal");
-            string year = GiveUserInputFromMandatoryField("Year");
+
+            while (true)
+            {
+                string year = GiveUserInputFromMandatoryField("Year");
+                try
+                {
+                    articleReference.Year = year;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Month: ");
             string month = _io.Read().Trim();
             _io.Write("Volume: ");
@@ -227,6 +242,7 @@ namespace ReferenceManager
             string title = GiveUserInputFromMandatoryField("Title");
             string bookTitle = GiveUserInputFromMandatoryField("Book Title");
             string year = GiveUserInputFromMandatoryField("Year");
+
             _io.Write("Month: ");
             string month = _io.Read().Trim();
             _io.Write("Editor: ");
@@ -253,13 +269,11 @@ namespace ReferenceManager
             var InproceedingsReference = new InProceedingsReference();
 
             _io.Write("Authors: ");
-            string author = _io.Read().Trim();
             InproceedingsReference.Author = author;
 
             while (true)
             {
                 _io.Write("Title: ");
-                string title = _io.Read().Trim();
                 try
                 {
                     InproceedingsReference.Title = title;
@@ -289,7 +303,6 @@ namespace ReferenceManager
             while (true)
             {
                 _io.Write("Book Title: ");
-                string bookTitle = _io.Read().Trim();
                 try
                 {
                     InproceedingsReference.BookTitle = bookTitle;

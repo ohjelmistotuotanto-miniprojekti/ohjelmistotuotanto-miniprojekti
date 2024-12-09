@@ -52,8 +52,7 @@ namespace ReferenceManager
                 }
             }
         }
-
-public string Key => GenerateKey();
+        public string? ReferenceKey { get; set; }
 
         public string Key => ReferenceKey is not null && !string.IsNullOrWhiteSpace(ReferenceKey) ? ReferenceKey : GenerateKey();
 
@@ -142,6 +141,7 @@ public string Key => GenerateKey();
         public string? Month { get; set; }
         public string? Note { get; set; }
         public string? Doi { get; set; }
+        public string? Number { get; set; }
 
         public override string ToBibtex()
         {
