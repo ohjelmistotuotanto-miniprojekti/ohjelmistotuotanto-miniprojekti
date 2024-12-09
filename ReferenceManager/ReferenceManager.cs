@@ -166,7 +166,7 @@ public void AddJournalArticle(List<Reference> references)
     }
 }
 
-        }
+        
 public void AddInProceedings(List<Reference> references)
 {
     _io.Write("Adding an inproceedings article...");
