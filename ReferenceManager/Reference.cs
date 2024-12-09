@@ -32,7 +32,7 @@ namespace ReferenceManager
 
         public abstract string ToBibtex();
 
-        public bool ToBibtexFile()
+        public virtual bool ToBibtexFile()
         {
             try
             {

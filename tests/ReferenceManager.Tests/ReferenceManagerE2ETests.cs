@@ -12,8 +12,8 @@ namespace ReferenceManager.Tests
         [Fact]
         public void EndToEnd_AddInProceedingsReference()
         {
-                string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
-                ReferenceManager.Program.FilePath = tempFilePath;
+            string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+            ReferenceManager.Program.FilePath = tempFilePath;
 
             try
             {
@@ -25,6 +25,7 @@ namespace ReferenceManager.Tests
                     "add", // Add command
                     "2",   // InProceedings type
                     "Vihavainen, Arto", // Author
+                    "",                 // Confirm authors
                     "Extreme Apprenticeship Method in Teaching Programming for Beginners.", // Title
                     "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", // BookTitle
                     "2011", // Year
