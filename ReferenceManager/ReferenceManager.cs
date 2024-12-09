@@ -137,7 +137,7 @@ namespace ReferenceManager
 
             _io.Write("Pages: ");
             string Pages = _io.Read().Trim();
-            articleReference.Year = Pages;
+            articleReference.Pages = Pages;
 
             _io.Write("Do you want to add this article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
@@ -182,11 +182,10 @@ namespace ReferenceManager
             string author = _io.Read().Trim();
             InproceedingsReference.Author = author;
 
-            string title;
             while (true)
             {
                 _io.Write("Title: ");
-                title = _io.Read().Trim();
+                string title = _io.Read().Trim();
                 try
                 {
                     InproceedingsReference.Title = title;
@@ -198,15 +197,25 @@ namespace ReferenceManager
                 }
             }
 
-            _io.Write("Year: ");
-            string year = _io.Read().Trim();
-            InproceedingsReference.Year = year;
+            while (true)
+            {
+                _io.Write("Year: ");
+                string Year = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.Year = Year;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
 
-            string bookTitle;
             while (true)
             {
                 _io.Write("Book Title: ");
-                bookTitle = _io.Read().Trim();
+                string bookTitle = _io.Read().Trim();
                 try
                 {
                     InproceedingsReference.BookTitle = bookTitle;
@@ -226,7 +235,7 @@ namespace ReferenceManager
                 _io.Write("Operation cancelled by the user.");
                 return;
             }
-
+            /*
             var newInProceedings = new InProceedingsReference
             {
                 Author = author,
@@ -244,6 +253,7 @@ namespace ReferenceManager
             {
                 _io.Write("Failed to add inproceedings article to BibTeX file.");
             }
+            */
         }
 
         /// <summary>
