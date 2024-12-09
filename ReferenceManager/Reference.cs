@@ -55,6 +55,8 @@ namespace ReferenceManager
 
 public string Key => GenerateKey();
 
+        public string Key => ReferenceKey is not null && !string.IsNullOrWhiteSpace(ReferenceKey) ? ReferenceKey : GenerateKey();
+
         private string GenerateKey()
         {
             string lastName = Author.Contains(",")
@@ -137,11 +139,13 @@ public string Key => GenerateKey();
                 // Validation
             }
         }
+        public string? Month { get; set; }
+        public string? Note { get; set; }
+        public string? Doi { get; set; }
 
         public override string ToBibtex()
         {
-            if (string.IsNullOrEmpty(Journal) || string.IsNullOrEmpty(Volume) || string.IsNullOrEmpty(Pages) ||
-                string.IsNullOrEmpty(Author) || string.IsNullOrEmpty(Title) || string.IsNullOrEmpty(Year))
+            if (string.IsNullOrEmpty(Journal) || string.IsNullOrEmpty(Author) || string.IsNullOrEmpty(Title) || string.IsNullOrEmpty(Year))
             {
                 return "";
             }
@@ -152,8 +156,12 @@ public string Key => GenerateKey();
             $"  title = {{{Title}}},\n" +
             $"  journal = {{{Journal}}},\n" +
             $"  year = {{{Year}}},\n" +
-            $"  volume = {{{Volume}}},\n" +
-            $"  pages = {{{Pages}}}\n" +
+            (string.IsNullOrEmpty(Month) ? "" : $"  month = {{{Month}}}\n") +
+            (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
+            (string.IsNullOrEmpty(Number) ? "" : $"  volume = {{{Volume}}},\n") +
+            (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}}\n") +
+            (string.IsNullOrEmpty(Note) ? "" : $"  note = {{{Note}}}\n") +
+            (string.IsNullOrEmpty(Doi) ? "" : $"  doi = {{{Doi}}}\n") +
             $"}}";
         }
     }
@@ -181,6 +189,17 @@ public string Key => GenerateKey();
             }
         }
 
+        public string? Editor { get; set; }
+        public string? Volume { get; set; }
+        public string? Number { get; set; }
+        public string? Series { get; set; }
+        public string? Pages { get; set; }
+        public string? Address { get; set; }
+        public string? Month { get; set; }
+        public string? Organization { get; set; }
+        public string? Publisher { get; set; }
+        public string? Note { get; set; }
+
         public override string ToBibtex()
         {
             if (string.IsNullOrEmpty(BookTitle) || string.IsNullOrEmpty(Author) ||
@@ -195,6 +214,16 @@ public string Key => GenerateKey();
             $"  title = {{{Title}}},\n" +
             $"  booktitle = {{{BookTitle}}},\n" +
             $"  year = {{{Year}}}\n" +
+            (string.IsNullOrEmpty(Editor) ? "" : $"  editor = {{{Editor}}},\n") +
+            (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
+            (string.IsNullOrEmpty(Number) ? "" : $"  number = {{{Number}}},\n") +
+            (string.IsNullOrEmpty(Series) ? "" : $"  series = {{{Series}}},\n") +
+            (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}},\n") +
+            (string.IsNullOrEmpty(Address) ? "" : $"  address = {{{Address}}},\n") +
+            (string.IsNullOrEmpty(Month) ? "" : $"  month = {{{Month}}},\n") +
+            (string.IsNullOrEmpty(Organization) ? "" : $"  organization = {{{Organization}}},\n") +
+            (string.IsNullOrEmpty(Publisher) ? "" : $"  publisher = {{{Publisher}}},\n") +
+            (string.IsNullOrEmpty(Note) ? "" : $"  note = {{{Note}}}\n") +
             $"}}";
         }
     }
