@@ -164,7 +164,22 @@ namespace ReferenceManager
     /// </summary>
     public class InProceedingsReference : Reference
     {
-        public required string BookTitle { get; set; }
+        //public required string BookTitle { get; set; }
+
+        private string _bookTitle = "";
+        public string BookTitle
+        {
+            get => _bookTitle;
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException("You must input a book title.");
+                }
+                _bookTitle = value;
+                // Validation
+            }
+        }
 
         public override string ToBibtex()
         {

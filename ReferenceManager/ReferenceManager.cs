@@ -160,18 +160,47 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
 
-            //var InproceepingsReference = new InProceedingsReference();
+            var InproceedingsReference = new InProceedingsReference();
 
             _io.Write("Authors: ");
             string author = _io.Read().Trim();
-            _io.Write("Title: ");
-            string title = _io.Read().Trim();
+            InproceedingsReference.Author = author;
+
+            string title;
+            while (true)
+            {
+                _io.Write("Title: ");
+                title = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.Title = title;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Year: ");
             string year = _io.Read().Trim();
-            //InproceepingsReference.Year = year;
+            InproceedingsReference.Year = year;
 
-            _io.Write("Book Title: ");
-            string bookTitle = _io.Read().Trim();
+            string bookTitle;
+            while (true)
+            {
+                _io.Write("Book Title: ");
+                bookTitle = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.BookTitle = bookTitle;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
 
             _io.Write("Do you want to add this inproceedings article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
