@@ -86,15 +86,16 @@ namespace ReferenceManager
         /// <summary>
         /// Adds a mandatory field to the user input.
         /// </summary>
-        public string giveUserInputFromMandatoryField(string field){
+        public string GiveUserInputFromMandatoryField(string field)
+        {
             string input;
             do
             {
-                _io.Write(field+"*: ");
+                _io.Write(field + "*: ");
                 input = _io.Read().Trim();
                 if (string.IsNullOrEmpty(input))
                 {
-                    _io.Write(field +" cannot be empty. Please enter again.");
+                    _io.Write(field + " cannot be empty. Please enter again.");
                 }
             } while (string.IsNullOrEmpty(input));
 
@@ -107,10 +108,10 @@ namespace ReferenceManager
         public void AddJournalArticle(List<Reference> references)
         {
             _io.Write("mandatory fields are followed by *");
-            string author = giveUserInputFromMandatoryField("Authors");
-            string title = giveUserInputFromMandatoryField("Title");
-            string journal = giveUserInputFromMandatoryField("Journal");
-            string year = giveUserInputFromMandatoryField("Year");    
+            string author = GiveUserInputFromMandatoryField("Authors");
+            string title = GiveUserInputFromMandatoryField("Title");
+            string journal = GiveUserInputFromMandatoryField("Journal");
+            string year = GiveUserInputFromMandatoryField("Year");
             _io.Write("Month: ");
             string month = _io.Read().Trim();
             _io.Write("Volume: ");
@@ -145,7 +146,7 @@ namespace ReferenceManager
                 Year = year,
                 Month = month,
                 Volume = volume,
-                Number = number,    
+                Number = number,
                 Pages = pages,
                 Doi = doi,
                 Note = note,
@@ -168,10 +169,10 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
             _io.Write("mandatory fields are followed by *");
-            string author = giveUserInputFromMandatoryField("Authors");
-            string title = giveUserInputFromMandatoryField("Title");
-            string bookTitle = giveUserInputFromMandatoryField("Book Title");
-            string year = giveUserInputFromMandatoryField("Year");
+            string author = GiveUserInputFromMandatoryField("Authors");
+            string title = GiveUserInputFromMandatoryField("Title");
+            string bookTitle = GiveUserInputFromMandatoryField("Book Title");
+            string year = GiveUserInputFromMandatoryField("Year");
             _io.Write("Month: ");
             string month = _io.Read().Trim();
             _io.Write("Editor: ");
