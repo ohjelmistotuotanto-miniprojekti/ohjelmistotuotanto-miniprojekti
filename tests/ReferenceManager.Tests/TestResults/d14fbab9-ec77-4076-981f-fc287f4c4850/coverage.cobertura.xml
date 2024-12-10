@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<coverage line-rate="0.8637" branch-rate="0.8181" version="1.9" timestamp="1733811780" lines-covered="241" lines-valid="279" branches-covered="72" branches-valid="88">
+<coverage line-rate="0.8637" branch-rate="0.8181" version="1.9" timestamp="1733816323" lines-covered="241" lines-valid="279" branches-covered="72" branches-valid="88">
   <sources>
     <source>D:\kurssit\tjt\Syventävät\TEKA3003\ohjelmistotuotanto-miniprojekti\ReferenceManager\</source>
   </sources>
