@@ -25,9 +25,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore --verbosity minimal
 
-      - name: Confirm Installed Versions
-        run: dotnet list tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj package
-
       - name: Run tests with coverage and diagnostics
         run: |
           dotnet test --collect:"XPlat Code Coverage" \
