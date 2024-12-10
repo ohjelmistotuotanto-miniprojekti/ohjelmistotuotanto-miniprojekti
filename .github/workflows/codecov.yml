@@ -64,9 +64,25 @@ jobs:
         env:
           COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
-      # Upload Coverage Badge as an Artifact
-      - name: Upload Coverage Badge
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-badge
-          path: coverage_badge.md
+      # Update README.md with the coverage badge
+      - name: Update README with Coverage Badge
+        run: |
+          badge_content=$(cat coverage_badge.md)
+          if grep -q "![Coverage]" README.md; then
+            # Replace the existing badge
+            sed -i "s|!\[Coverage\](.*)|$badge_content|" README.md
+          else
+            # Append the badge at the top of the README
+            echo -e "$badge_content\n\n$(cat README.md)" > README.md
+          fi
+
+      # Commit and push the updated README
+      - name: Commit and push updated README
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README with coverage badge [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
