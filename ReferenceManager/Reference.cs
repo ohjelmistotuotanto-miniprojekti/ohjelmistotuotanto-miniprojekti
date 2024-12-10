@@ -147,12 +147,26 @@ namespace ReferenceManager
             get => _pages;
             set
             {
-                _pages = value;
-                // Validation
+                //_pages = value;
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else {
+                    _pages = value;
+                }
             }
         }
-
-        private string _note= "";
+        private string _note = "";
         public string Note
         {
             get => _note;
@@ -200,8 +214,6 @@ namespace ReferenceManager
     /// </summary>
     public class InProceedingsReference : Reference
     {
-        //public required string BookTitle { get; set; }
-
         private string _bookTitle = "";
         public string BookTitle
         {
@@ -213,7 +225,6 @@ namespace ReferenceManager
                     throw new ArgumentNullException("You must input a book title.");
                 }
                 _bookTitle = value;
-                // Validation
             }
         }
 
@@ -234,7 +245,31 @@ namespace ReferenceManager
         public string? Editor { get; set; }
         public string? Number { get; set; }
         public string? Series { get; set; }
-        public string? Pages { get; set; }
+
+        private string _pages = "";
+        public string Pages
+        {
+            get => _pages;
+            set
+            {
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else {
+                    _pages = value;
+                }
+            }
+        }
         public string? Address { get; set; }
         public string? Organization { get; set; }
         public string? Publisher { get; set; }

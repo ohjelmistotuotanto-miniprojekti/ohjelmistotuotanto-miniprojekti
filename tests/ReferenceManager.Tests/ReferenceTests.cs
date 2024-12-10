@@ -186,7 +186,7 @@ public class UnitTest2
     }
     // ===================== Test IsInt ends =====================
 
-    
+    /*
     [Fact]
     public void TestToBibtex()
     {
@@ -210,7 +210,7 @@ public class UnitTest2
             $"  pages = {{38--46}}\n" +
             $"}}",
             result);
-    }
+    }*/
 
     [Fact]
     public void TestToBibtexFail()

@@ -132,20 +132,20 @@ namespace ReferenceManager
 
             _io.Write("Month: ");
             string month = _io.Read().Trim();
-            if (!string.IsNullOrEmpty(month))
-            {
-                newArticleReference.Month = month;
-            }
-
 
             while (true)
             {
                 _io.Write("Volume: ");
                 string volume = _io.Read().Trim();
 
+                if (string.IsNullOrEmpty(volume))
+                {
+                    break;
+                }
+
                 try
                 {
-                    newArticleReference.Volume= volume;
+                    newArticleReference.Volume = volume;
                     break;
                 }
                 catch (Exception ex)
@@ -154,9 +154,26 @@ namespace ReferenceManager
                 }
             }
 
+            while (true)
+            {
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    newArticleReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(month))
+            {
+                newArticleReference.Month = month;
+            }
             
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
             _io.Write("Doi: ");
             string doi = _io.Read().Trim();
             _io.Write("Note: ");
@@ -190,13 +207,11 @@ namespace ReferenceManager
 
         public void AddInProceedings(List<Reference> references)
         {
-            var InproceedingsReference = new InProceedingsReference();
-
             _io.Write("Adding an inproceedings article...");
             _io.Write("mandatory fields are followed by *");
-            string author = GiveUserInputFromMandatoryField("Authors");
+            var InproceedingsReference = new InProceedingsReference();
 
-            _io.Write("Authors: ");
+            string author = GiveUserInputFromMandatoryField("Authors");
             InproceedingsReference.Author = author;
 
             while (true)
@@ -285,14 +300,22 @@ namespace ReferenceManager
                 InproceedingsReference.Series = series;
             }
 
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
-            if(!string.IsNullOrEmpty(pages))
+            while (true)
             {
-                InproceedingsReference.Pages = pages;
-            }
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+}
 
-            _io.Write("Address: ");
+_io.Write("Address: ");
             string address = _io.Read().Trim();
             if(!string.IsNullOrEmpty(address))
             {
