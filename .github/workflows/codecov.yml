@@ -64,13 +64,9 @@ jobs:
         env:
           COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
-      # Commit and push badge
-      - name: Commit and push badge
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add coverage_badge.md
-          git commit -m "Update coverage badge [skip ci]" || echo "No changes to commit"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Upload Coverage Badge as an Artifact
+      - name: Upload Coverage Badge
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-badge
+          path: coverage_badge.md
