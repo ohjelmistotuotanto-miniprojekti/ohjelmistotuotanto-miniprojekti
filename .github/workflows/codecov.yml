@@ -3,8 +3,10 @@ name: Code Coverage and Badge
 on:
   push:
     branches:
-      - codecov
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   run-tests-and-generate-badge:
