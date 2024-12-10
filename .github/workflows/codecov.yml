@@ -11,29 +11,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up .NET
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 9.0
 
-      - name: Clean Build Cache
-        run: dotnet clean --verbosity normal
-
-      - name: Restore dependencies
-        run: dotnet restore --verbosity minimal
-
-      - name: Run tests with coverage and diagnostics
+      # Install dependencies
+      - name: Install dependencies
         run: |
-          dotnet test --collect:"XPlat Code Coverage" \
+          dotnet restore
+
+      # Clean Build
+      - name: Clean Build
+        run: dotnet clean
+
+      # Build tests
+      - name: Build Tests
+        run: dotnet build tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj
+
+      # Run tests with coverage
+      - name: Run tests with coverage
+        run: |
+          dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
+          --collect:"XPlat Code Coverage" \
           --results-directory ./TestResults \
           -p:CollectCoverage=true \
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
           --diag:TestExecution.log
 
+      # Locate Coverage File
       - name: Locate Coverage File
         id: locate-coverage
         run: |
@@ -45,12 +57,14 @@ jobs:
           echo "COVERAGE_FILE_PATH=$coverage_file" >> $GITHUB_ENV
         shell: bash
 
+      # Run Python script to generate badge
       - name: Generate Coverage Badge
         run: |
           python3 scripts/parse_coverage.py
         env:
           COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
+      # Commit and push badge
       - name: Commit and push badge
         run: |
           git config user.name "github-actions[bot]"
