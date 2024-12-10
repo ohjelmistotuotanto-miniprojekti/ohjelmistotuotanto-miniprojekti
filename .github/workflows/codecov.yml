@@ -25,9 +25,13 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      # Clean Build
-      - name: Clean Build
-        run: dotnet clean
+      # Build the project
+      - name: Build the project
+        run: dotnet build --no-restore
+
+      # Clean TestResults folder (optional, for clean runs)
+      - name: Clean TestResults Folder
+        run: rm -rf ./TestResults
 
       # Run tests with coverage
       - name: Run tests with coverage
@@ -38,17 +42,23 @@ jobs:
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml
 
-      # Find the correct coverage file dynamically
+      # Locate the coverage file
       - name: Locate Coverage File
         id: locate-coverage
         run: |
+          echo "Looking for coverage file in TestResults folder..."
           coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
           if [ -z "$coverage_file" ]; then
-            echo "Coverage file not found!"
+            echo "Error: Coverage file not found in TestResults folder!"
             exit 1
           fi
+          echo "Located coverage file: $coverage_file"
           echo "COVERAGE_FILE_PATH=$coverage_file" >> $GITHUB_ENV
         shell: bash
+
+      # Debug: Log environment variables (optional, for troubleshooting)
+      - name: Debug Environment Variables
+        run: env
 
       # Run Python script to generate badge
       - name: Generate Coverage Badge
