@@ -28,7 +28,7 @@ jobs:
       # Force specific version of Microsoft.NET.Test.Sdk
       - name: Downgrade Microsoft.NET.Test.Sdk to 17.12
         run: |
-          dotnet add package Microsoft.NET.Test.Sdk --version 17.12.0
+          dotnet add tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj package Microsoft.NET.Test.Sdk --version 17.12.0
           dotnet restore
 
       # Clean Build
