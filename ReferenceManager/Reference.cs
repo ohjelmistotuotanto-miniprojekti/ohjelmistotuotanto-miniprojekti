@@ -128,14 +128,29 @@ namespace ReferenceManager
 
         //public string Pages { get; set; }
 
-        private string _pages = "";
+         private string _pages = "";
         public string Pages
         {
             get => _pages;
             set
             {
-                _pages = value;
-                // Validation
+                //_pages = value;
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else {
+                    _pages = value;
+                }
             }
         }
         public string? Month { get; set; }
@@ -193,7 +208,33 @@ namespace ReferenceManager
         public string? Volume { get; set; }
         public string? Number { get; set; }
         public string? Series { get; set; }
-        public string? Pages { get; set; }
+        //public string? Pages { get; set; }
+
+        private string _pages = "";
+        public string Pages
+        {
+            get => _pages;
+            set
+            {
+                //_pages = value;
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else {
+                    _pages = value;
+                }
+            }
+        }
         public string? Address { get; set; }
         public string? Month { get; set; }
         public string? Organization { get; set; }

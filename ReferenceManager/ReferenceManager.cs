@@ -131,8 +131,22 @@ namespace ReferenceManager
             string month = _io.Read().Trim();
             _io.Write("Volume: ");
             string volume = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
+            
+            while (true)
+            {
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    articleReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Doi: ");
             string doi = _io.Read().Trim();
             _io.Write("Note: ");
@@ -234,6 +248,7 @@ namespace ReferenceManager
 
         public void AddInProceedings(List<Reference> references)
         {
+            var InproceedingsReference = new InProceedingsReference();
             _io.Write("Adding an inproceedings article...");
             _io.Write("mandatory fields are followed by *");
             string author = GiveUserInputFromMandatoryField("Authors");
@@ -249,8 +264,22 @@ namespace ReferenceManager
             string volume = _io.Read().Trim();
             _io.Write("Series: ");
             string series = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
+                        
+            while (true)
+            {
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Address: ");
             string address = _io.Read().Trim();
             _io.Write("Organization: ");
@@ -262,7 +291,6 @@ namespace ReferenceManager
             _io.Write("Key: ");
             string key = _io.Read().Trim();
 
-            var InproceedingsReference = new InProceedingsReference();
 
             _io.Write("Authors: ");
             InproceedingsReference.Author = author;
