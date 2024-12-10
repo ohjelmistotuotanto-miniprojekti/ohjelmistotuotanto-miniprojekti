@@ -1,6 +1,9 @@
 using System;
+using System.ComponentModel.Design;
 
 using FluentAssertions.Equivalency;
+
+using Newtonsoft.Json;
 
 namespace ReferenceManager
 {
@@ -88,18 +91,19 @@ namespace ReferenceManager
         /// </summary>
         public string GiveUserInputFromMandatoryField(string field)
         {
-            string input;
+            string? input;
             do
             {
                 _io.Write(field + "*: ");
-                input = _io.Read().Trim();
-                if (string.IsNullOrEmpty(input))
+                input = _io.Read();
+
+                if (string.IsNullOrWhiteSpace(input))
                 {
                     _io.Write(field + " cannot be empty. Please enter again.");
                 }
-            } while (string.IsNullOrEmpty(input));
+            } while (string.IsNullOrWhiteSpace(input));
 
-            return input;
+            return input.Trim();
         }
 
         /// <summary>
@@ -107,37 +111,44 @@ namespace ReferenceManager
         /// </summary>
         public void AddJournalArticle(List<Reference> references)
         {
-            _io.Write("mandatory fields are followed by *");
-            string author = GiveUserInputFromMandatoryField("Authors");
+            _io.Write("Mandatory fields are followed by *");
+            string author = GetAuthors();
             string title = GiveUserInputFromMandatoryField("Title");
             string journal = GiveUserInputFromMandatoryField("Journal");
             string year = GiveUserInputFromMandatoryField("Year");
+
+            // Optional fields
             _io.Write("Month: ");
-            string month = _io.Read().Trim();
+            string month = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Volume: ");
-            string volume = _io.Read().Trim();
+            string volume = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Number: ");
-            string number = _io.Read().Trim();
+            string number = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
+            string pages = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Doi: ");
-            string doi = _io.Read().Trim();
+            string doi = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Note: ");
-            string note = _io.Read().Trim();
+            string note = _io.Read()?.Trim() ?? string.Empty;
+
             _io.Write("Key: ");
-            string key = _io.Read().Trim();
+            string key = _io.Read()?.Trim() ?? string.Empty;
 
             _io.Write("Do you want to add this article (y/n)?");
-            string confirmation = _io.Read().Trim().ToLower();
+            string? confirmation = _io.Read()?.Trim().ToLower();
 
             if (confirmation != "y")
             {
                 _io.Write("Operation cancelled by the user.");
                 return;
             }
+
             _io.Write("Adding journal article...");
-
-
             var newArticleReference = new ArticleReference
             {
                 Author = author,
@@ -162,43 +173,55 @@ namespace ReferenceManager
             {
                 _io.Write("Failed to add reference to BibTeX file.");
             }
-
         }
+
 
         public void AddInProceedings(List<Reference> references)
         {
             _io.Write("Adding an inproceedings article...");
-            _io.Write("mandatory fields are followed by *");
-            string author = GiveUserInputFromMandatoryField("Authors");
+            _io.Write("Mandatory fields are followed by *");
+
+            string author = GetAuthors();
             string title = GiveUserInputFromMandatoryField("Title");
             string bookTitle = GiveUserInputFromMandatoryField("Book Title");
             string year = GiveUserInputFromMandatoryField("Year");
-            _io.Write("Month: ");
-            string month = _io.Read().Trim();
-            _io.Write("Editor: ");
-            string editor = _io.Read().Trim();
-            _io.Write("Volume: ");
-            string volume = _io.Read().Trim();
-            _io.Write("Number: ");
-            string number = _io.Read().Trim();
-            _io.Write("Series: ");
-            string series = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
-            _io.Write("Address: ");
-            string address = _io.Read().Trim();
-            _io.Write("Organization: ");
-            string organization = _io.Read().Trim();
-            _io.Write("Publisher: ");
-            string publisher = _io.Read().Trim();
-            _io.Write("Note: ");
-            string note = _io.Read().Trim();
-            _io.Write("Key: ");
-            string key = _io.Read().Trim();
 
+            // Optional fields
+            _io.Write("Month: ");
+            string month = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Editor: ");
+            string editor = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Volume: ");
+            string volume = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Number: ");
+            string number = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Series: ");
+            string series = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Pages: ");
+            string pages = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Address: ");
+            string address = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Organization: ");
+            string organization = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Publisher: ");
+            string publisher = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Note: ");
+            string note = _io.Read()?.Trim() ?? string.Empty;
+
+            _io.Write("Key: ");
+            string key = _io.Read()?.Trim() ?? string.Empty;
 
             _io.Write("Do you want to add this inproceedings article (y/n)?");
-            string confirmation = _io.Read().Trim().ToLower();
+            string confirmation = _io.Read()?.Trim().ToLower();
 
             if (confirmation != "y")
             {
@@ -235,6 +258,42 @@ namespace ReferenceManager
                 _io.Write("Failed to add inproceedings article to BibTeX file.");
             }
         }
+
+
+        /// <summary>
+        /// Collects authors from the user one author at time
+        /// </summary>
+        /// <returns> A string of authors</returns>
+        public string GetAuthors()
+        {
+            List<string> authors = new List<string>();
+
+            while (true)
+            {
+                _io.Write(authors.Count == 0
+                    ? "Enter author name (at least one author is required):"
+                    : "Enter another author name (or press Enter to finish):");
+                string? author = _io.Read();
+
+                if (!string.IsNullOrWhiteSpace(author))
+                {
+                    authors.Add(author.Trim());
+                }
+                else if (authors.Count > 0)
+                {
+                    break; // Exit if the user presses Enter after adding at least one author
+                }
+                else
+                {
+                    _io.Write("At least one author is required. Please add an author.");
+                }
+            }
+
+            return string.Join(", ", authors);
+        }
+
+
+
 
         /// <summary>
         /// Lists all references from the BibTeX file.
