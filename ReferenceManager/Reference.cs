@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 
 namespace ReferenceManager
 {
+
     /// <summary>
     /// Abstract class for references.
     /// </summary>
     public abstract class Reference
     {
+        public bool isInt(string x)
+        {
+            return int.TryParse(x, out int value);
+        }
+
         private string _author = "";
         public string Author
         {
@@ -19,7 +25,6 @@ namespace ReferenceManager
             set
             {
                 _author = value;
-                // Validation
             }
         }
 
@@ -52,7 +57,17 @@ namespace ReferenceManager
                 }
             }
         }
+        // Optionals
         public string? ReferenceKey { get; set; }
+        private string _month = "";
+        public string Month
+        {
+            get => _month;
+            set
+            {
+                _month = value;
+            }
+        }
 
         public string Key => ReferenceKey is not null && !string.IsNullOrWhiteSpace(ReferenceKey) ? ReferenceKey : GenerateKey();
 
@@ -100,8 +115,6 @@ namespace ReferenceManager
     /// </summary>
     public class ArticleReference : Reference
     {
-        //public string Journal { get; set; }
-
         private string _journal = "";
         public string Journal
         {
@@ -113,20 +126,20 @@ namespace ReferenceManager
             }
         }
 
-        //public string Volume { get; set; }
-
         private string _volume = "";
         public string Volume
         {
             get => _volume;
             set
             {
+                if (!isInt(value))
+                {
+                    throw new ArgumentException("Volume must be a number");
+                }
                 _volume = value;
-                // Validation
+                
             }
         }
-
-        //public string Pages { get; set; }
 
         private string _pages = "";
         public string Pages
@@ -138,10 +151,26 @@ namespace ReferenceManager
                 // Validation
             }
         }
-        public string? Month { get; set; }
-        public string? Note { get; set; }
-        public string? Doi { get; set; }
-        public string? Number { get; set; }
+
+        private string _note= "";
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+            }
+        }
+
+        private string _doi = "";
+        public string Doi
+        {
+            get => _doi;
+            set
+            {
+                _doi = value;
+            }
+        }
 
         public override string ToBibtex()
         {
@@ -158,7 +187,6 @@ namespace ReferenceManager
             $"  year = {{{Year}}},\n" +
             (string.IsNullOrEmpty(Month) ? "" : $"  month = {{{Month}}}\n") +
             (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
-            (string.IsNullOrEmpty(Number) ? "" : $"  volume = {{{Volume}}},\n") +
             (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}}\n") +
             (string.IsNullOrEmpty(Note) ? "" : $"  note = {{{Note}}}\n") +
             (string.IsNullOrEmpty(Doi) ? "" : $"  doi = {{{Doi}}}\n") +
@@ -189,13 +217,25 @@ namespace ReferenceManager
             }
         }
 
+        private string _volume = "";
+        public string Volume
+        {
+            get => _volume;
+            set
+            {
+                if (!isInt(value))
+                {
+                    throw new ArgumentException("Volume must be a number");
+                }
+                _volume = value;
+            }
+        }
+
         public string? Editor { get; set; }
-        public string? Volume { get; set; }
         public string? Number { get; set; }
         public string? Series { get; set; }
         public string? Pages { get; set; }
         public string? Address { get; set; }
-        public string? Month { get; set; }
         public string? Organization { get; set; }
         public string? Publisher { get; set; }
         public string? Note { get; set; }
@@ -216,7 +256,6 @@ namespace ReferenceManager
             $"  year = {{{Year}}}\n" +
             (string.IsNullOrEmpty(Editor) ? "" : $"  editor = {{{Editor}}},\n") +
             (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
-            (string.IsNullOrEmpty(Number) ? "" : $"  number = {{{Number}}},\n") +
             (string.IsNullOrEmpty(Series) ? "" : $"  series = {{{Series}}},\n") +
             (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}},\n") +
             (string.IsNullOrEmpty(Address) ? "" : $"  address = {{{Address}}},\n") +
