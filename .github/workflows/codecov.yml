@@ -64,13 +64,12 @@ jobs:
         env:
           COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
-      # Update README.md with the coverage badge
       - name: Update README with Coverage Badge
         run: |
           badge_content=$(cat coverage_badge.md)
-          if grep -q "![Coverage]" README.md; then
+          if grep -q "!\[Coverage\]" README.md; then
             # Replace the existing badge
-            sed -i "s|!\[Coverage\](.*)|$badge_content|" README.md
+            sed -i "s|!\[Coverage\](https://img.shields.io/badge/coverage-[^)]*)|$badge_content|" README.md
           else
             # Append the badge at the top of the README
             echo -e "$badge_content\n\n$(cat README.md)" > README.md
