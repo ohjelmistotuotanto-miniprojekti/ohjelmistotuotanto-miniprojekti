@@ -144,7 +144,7 @@ namespace ReferenceManager.Tests
             Assert.Empty(references); // Ensure no references are added
             mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
         }*/
-        
+
         /*
         [Fact]
         public void Test_UserCancelsInProceedings()
