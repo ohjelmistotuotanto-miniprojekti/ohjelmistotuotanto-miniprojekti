@@ -1,0 +1,53 @@
+name: Code Coverage and Badge
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  run-tests-and-generate-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up .NET
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0" # or your project's .NET version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: dotnet restore
+
+      # Run tests with coverage
+      - name: Run tests with coverage
+        run: |
+          dotnet test --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults \
+          -p:CollectCoverage=true \
+          -p:CoverletOutputFormat=cobertura \
+          -p:CoverletOutput=TestResults/coverage.cobertura.xml
+
+      # Run Python script to generate badge
+      - name: Generate Coverage Badge
+        run: |
+          python3 scripts/parse_coverage.py
+        env:
+          COVERAGE_FILE_PATH: ./TestResults # Pass the base path for coverage file detection
+
+      # Commit and push badge changes
+      - name: Commit and push badge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add coverage_badge.md
+          git commit -m "Update coverage badge [skip ci]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
