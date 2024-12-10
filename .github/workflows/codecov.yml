@@ -3,7 +3,7 @@ name: Code Coverage and Badge
 on:
   push:
     branches:
-      - main
+      - codecov
   pull_request:
 
 jobs:
