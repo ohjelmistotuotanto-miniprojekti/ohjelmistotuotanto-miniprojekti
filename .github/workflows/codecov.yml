@@ -23,7 +23,7 @@ jobs:
         run: dotnet clean --verbosity normal
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore --verbosity minimal
 
       - name: Confirm Installed Versions
         run: dotnet list tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj package
@@ -36,3 +36,30 @@ jobs:
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
           --diag:TestExecution.log
+
+      - name: Locate Coverage File
+        id: locate-coverage
+        run: |
+          coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
+          if [ -z "$coverage_file" ]; then
+            echo "Coverage file not found!"
+            exit 1
+          fi
+          echo "COVERAGE_FILE_PATH=$coverage_file" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Generate Coverage Badge
+        run: |
+          python3 scripts/parse_coverage.py
+        env:
+          COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
+
+      - name: Commit and push badge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add coverage_badge.md
+          git commit -m "Update coverage badge [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
