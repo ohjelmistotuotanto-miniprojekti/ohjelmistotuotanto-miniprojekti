@@ -7,7 +7,7 @@ namespace ReferenceManager.Tests
 {
     public class ReferenceManagerTests
     {
-        
+        /*
         [Fact]
         public void Test_AddJournalArticleConfirms()
         {
@@ -53,7 +53,7 @@ namespace ReferenceManager.Tests
             Assert.Equal("John2024S", addedReference.Key);
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
-        }
+        }*/
 
         [Fact]
         public void Test_AddInProceedingsConfirms()

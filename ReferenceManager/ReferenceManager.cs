@@ -173,7 +173,7 @@ namespace ReferenceManager
             {
                 newArticleReference.Month = month;
             }
-            
+
             _io.Write("Doi: ");
             string doi = _io.Read().Trim();
             _io.Write("Note: ");
@@ -191,7 +191,7 @@ namespace ReferenceManager
             }
             _io.Write("Adding journal article...");
 
-           
+
             references.Add(newArticleReference);
 
             if (newArticleReference.ToBibtexFile())
@@ -313,18 +313,18 @@ namespace ReferenceManager
                 {
                     _io.Write(ex.Message);
                 }
-}
+            }
 
-_io.Write("Address: ");
+            _io.Write("Address: ");
             string address = _io.Read().Trim();
-            if(!string.IsNullOrEmpty(address))
+            if (!string.IsNullOrEmpty(address))
             {
                 InproceedingsReference.Address = address;
             }
 
             _io.Write("Organization: ");
             string organization = _io.Read().Trim();
-            if(!string.IsNullOrEmpty(organization))
+            if (!string.IsNullOrEmpty(organization))
             {
                 InproceedingsReference.Organization = organization;
             }

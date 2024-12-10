@@ -48,10 +48,11 @@ namespace ReferenceManager
             get => _year;
             set
             {
-                if (int.TryParse(value, out int year) && year >=1 && year <= 9999)
+                if (int.TryParse(value, out int year) && year >= 1 && year <= 9999)
                 {
                     _year = value;
-                } else
+                }
+                else
                 {
                     throw new ArgumentException("Invalid year");
                 }
@@ -137,7 +138,7 @@ namespace ReferenceManager
                     throw new ArgumentException("Volume must be a number");
                 }
                 _volume = value;
-                
+
             }
         }
 
@@ -161,7 +162,8 @@ namespace ReferenceManager
                         throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
                     }
                 }
-                else {
+                else
+                {
                     _pages = value;
                 }
             }
@@ -265,7 +267,8 @@ namespace ReferenceManager
                         throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
                     }
                 }
-                else {
+                else
+                {
                     _pages = value;
                 }
             }
