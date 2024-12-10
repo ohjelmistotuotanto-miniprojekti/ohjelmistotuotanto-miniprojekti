@@ -21,17 +21,23 @@ jobs:
         with:
           dotnet-version: 9.0
 
-      # Install dependencies
-      - name: Install dependencies
+      # Restore dependencies
+      - name: Restore dependencies
         run: dotnet restore
+
+      # Force specific version of Microsoft.NET.Test.Sdk
+      - name: Downgrade Microsoft.NET.Test.Sdk to 17.12
+        run: |
+          dotnet add package Microsoft.NET.Test.Sdk --version 17.12.0
+          dotnet restore
+
+      # Clean Build
+      - name: Clean Build
+        run: dotnet clean
 
       # Build the project
       - name: Build the project
         run: dotnet build --no-restore
-
-      # Clean TestResults folder (optional, for clean runs)
-      - name: Clean TestResults Folder
-        run: rm -rf ./TestResults
 
       # Run tests with coverage
       - name: Run tests with coverage
@@ -46,7 +52,6 @@ jobs:
       - name: Locate Coverage File
         id: locate-coverage
         run: |
-          echo "Looking for coverage file in TestResults folder..."
           coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
           if [ -z "$coverage_file" ]; then
             echo "Error: Coverage file not found in TestResults folder!"
