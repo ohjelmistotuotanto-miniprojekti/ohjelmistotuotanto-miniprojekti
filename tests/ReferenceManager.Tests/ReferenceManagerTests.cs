@@ -301,6 +301,50 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
+        [Fact]
+        public void Test_AddInProceedingsWithKey()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference>();
+
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Vihavainen, Arto") // Author
+                .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
+                .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")  // Editor
+                .Returns("")  // Volume
+                .Returns("")  // Number
+                .Returns("")  // Series
+                .Returns("")  // Pages
+                .Returns("")  // Address
+                .Returns("")  // Month
+                .Returns("")  // Organization
+                .Returns("")  // Publisher
+                .Returns("")  // Note
+                .Returns("2222")  // key
+                .Returns("y");              // Confirmation
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object);
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as InProceedingsReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("Vihavainen, Arto", addedReference.Author);
+            Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
+            Assert.Equal("2011", addedReference.Year);
+            Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", addedReference.BookTitle);
+            Assert.Equal("2222", addedReference.Key);
+            mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
+        }
 
         [Fact]
         public void Test_AddJournalArticleWithKey()
