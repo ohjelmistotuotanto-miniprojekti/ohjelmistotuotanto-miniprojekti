@@ -1,4 +1,5 @@
-![Coverage](https://github.com/<your-username>/<your-repo-name>/raw/main/coverage_badge.md)
+![Coverage](https://img.shields.io/badge/coverage-86.37%25-green)
+
 
 # ReferenceManager
 
