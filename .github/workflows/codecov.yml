@@ -19,7 +19,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "9.0" # or your project's .NET version
+          dotnet-version: 9.0
 
       # Install dependencies
       - name: Install dependencies
