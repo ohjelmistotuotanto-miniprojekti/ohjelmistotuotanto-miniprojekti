@@ -107,19 +107,73 @@ namespace ReferenceManager
         /// </summary>
         public void AddJournalArticle(List<Reference> references)
         {
+            var newArticleReference = new ArticleReference();
             _io.Write("mandatory fields are followed by *");
             string author = GiveUserInputFromMandatoryField("Authors");
+            newArticleReference.Author = author;
             string title = GiveUserInputFromMandatoryField("Title");
+            newArticleReference.Title = title;
             string journal = GiveUserInputFromMandatoryField("Journal");
-            string year = GiveUserInputFromMandatoryField("Year");
+            newArticleReference.Journal = journal;
+
+            while (true)
+            {
+                string year = GiveUserInputFromMandatoryField("Year");
+                try
+                {
+                    newArticleReference.Year = year;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Month: ");
             string month = _io.Read().Trim();
-            _io.Write("Volume: ");
-            string volume = _io.Read().Trim();
-            _io.Write("Number: ");
-            string number = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
+
+            while (true)
+            {
+                _io.Write("Volume: ");
+                string volume = _io.Read().Trim();
+
+                if (string.IsNullOrEmpty(volume))
+                {
+                    break;
+                }
+
+                try
+                {
+                    newArticleReference.Volume = volume;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
+            while (true)
+            {
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    newArticleReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(month))
+            {
+                newArticleReference.Month = month;
+            }
+
             _io.Write("Doi: ");
             string doi = _io.Read().Trim();
             _io.Write("Note: ");
@@ -138,20 +192,6 @@ namespace ReferenceManager
             _io.Write("Adding journal article...");
 
 
-            var newArticleReference = new ArticleReference
-            {
-                Author = author,
-                Title = title,
-                Journal = journal,
-                Year = year,
-                Month = month,
-                Volume = volume,
-                Number = number,
-                Pages = pages,
-                Doi = doi,
-                Note = note,
-                ReferenceKey = key
-            };
             references.Add(newArticleReference);
 
             if (newArticleReference.ToBibtexFile())
@@ -169,33 +209,142 @@ namespace ReferenceManager
         {
             _io.Write("Adding an inproceedings article...");
             _io.Write("mandatory fields are followed by *");
+            var InproceedingsReference = new InProceedingsReference();
+
             string author = GiveUserInputFromMandatoryField("Authors");
-            string title = GiveUserInputFromMandatoryField("Title");
-            string bookTitle = GiveUserInputFromMandatoryField("Book Title");
-            string year = GiveUserInputFromMandatoryField("Year");
+            InproceedingsReference.Author = author;
+
+            while (true)
+            {
+                string title = GiveUserInputFromMandatoryField("Title");
+                try
+                {
+                    InproceedingsReference.Title = title;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
+            while (true)
+            {
+                string bookTitle = GiveUserInputFromMandatoryField("Book Title");
+                try
+                {
+                    InproceedingsReference.BookTitle = bookTitle;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
+            while (true)
+            {
+                string year = GiveUserInputFromMandatoryField("Year");
+                try
+                {
+                    InproceedingsReference.Year = year;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Month: ");
             string month = _io.Read().Trim();
+
+            if (!string.IsNullOrEmpty(month))
+            {
+                InproceedingsReference.Month = month;
+            }
+
             _io.Write("Editor: ");
             string editor = _io.Read().Trim();
-            _io.Write("Volume: ");
-            string volume = _io.Read().Trim();
-            _io.Write("Number: ");
-            string number = _io.Read().Trim();
+
+            if (!string.IsNullOrEmpty(editor))
+            {
+                InproceedingsReference.Editor = editor;
+            }
+
+            while (true)
+            {
+                _io.Write("Volume: ");
+                string volume = _io.Read().Trim();
+
+                if (string.IsNullOrEmpty(volume))
+                {
+                    break;
+                }
+
+                try
+                {
+                    InproceedingsReference.Volume = volume;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Series: ");
             string series = _io.Read().Trim();
-            _io.Write("Pages: ");
-            string pages = _io.Read().Trim();
+            if (!string.IsNullOrEmpty(series))
+            {
+                InproceedingsReference.Series = series;
+            }
+
+            while (true)
+            {
+                _io.Write("Pages: ");
+                string pages = _io.Read().Trim();
+                try
+                {
+                    InproceedingsReference.Pages = pages;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _io.Write(ex.Message);
+                }
+            }
+
             _io.Write("Address: ");
             string address = _io.Read().Trim();
+            if (!string.IsNullOrEmpty(address))
+            {
+                InproceedingsReference.Address = address;
+            }
+
             _io.Write("Organization: ");
             string organization = _io.Read().Trim();
+            if (!string.IsNullOrEmpty(organization))
+            {
+                InproceedingsReference.Organization = organization;
+            }
+
             _io.Write("Publisher: ");
             string publisher = _io.Read().Trim();
+            if (!string.IsNullOrEmpty(publisher))
+            {
+                InproceedingsReference.Publisher = publisher;
+            }
+
             _io.Write("Note: ");
             string note = _io.Read().Trim();
+            if (!string.IsNullOrEmpty(note))
+            {
+                InproceedingsReference.Note = note;
+            }
+
             _io.Write("Key: ");
             string key = _io.Read().Trim();
-
 
             _io.Write("Do you want to add this inproceedings article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
@@ -206,27 +355,9 @@ namespace ReferenceManager
                 return;
             }
 
-            var newInProceedings = new InProceedingsReference
-            {
-                Author = author,
-                Title = title,
-                BookTitle = bookTitle,
-                Year = year,
-                Editor = editor,
-                Volume = volume,
-                Number = number,
-                Series = series,
-                Pages = pages,
-                Address = address,
-                Month = month,
-                Organization = organization,
-                Publisher = publisher,
-                Note = note,
-                ReferenceKey = key
-            };
-            references.Add(newInProceedings);
+            references.Add(InproceedingsReference);
 
-            if (newInProceedings.ToBibtexFile())
+            if (InproceedingsReference.ToBibtexFile())
             {
                 _io.Write("Inproceedings article added successfully.");
             }
