@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
+      # Clean Build
       - name: Clean Build
         run: dotnet clean
 
@@ -35,14 +36,26 @@ jobs:
           --results-directory ./TestResults \
           -p:CollectCoverage=true \
           -p:CoverletOutputFormat=cobertura \
-          -p:CoverletOutput=TestResults/coverage.cobertura.xml
+          -p:CoverletOutput=./TestResults/coverage.cobertura.xml
+
+      # Find the correct coverage file dynamically
+      - name: Locate Coverage File
+        id: locate-coverage
+        run: |
+          coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
+          if [ -z "$coverage_file" ]; then
+            echo "Coverage file not found!"
+            exit 1
+          fi
+          echo "COVERAGE_FILE_PATH=$coverage_file" >> $GITHUB_ENV
+        shell: bash
 
       # Run Python script to generate badge
       - name: Generate Coverage Badge
         run: |
           python3 scripts/parse_coverage.py
         env:
-          COVERAGE_FILE_PATH: ./TestResults # Pass the base path for coverage file detection
+          COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
       # Commit and push badge changes
       - name: Commit and push badge
@@ -50,7 +63,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add coverage_badge.md
-          git commit -m "Update coverage badge [skip ci]"
+          git commit -m "Update coverage badge [skip ci]" || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
