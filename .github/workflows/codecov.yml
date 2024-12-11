@@ -42,7 +42,6 @@ jobs:
       - name: Build Tests
         run: dotnet build tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj
 
-      # Run tests with coverage
       - name: Run tests with coverage
         run: |
           dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
