@@ -1,4 +1,4 @@
-![Coverage](https://img.shields.io/badge/coverage-41.61%25-red)
+![Coverage](https://img.shields.io/badge/coverage-55.62%25-orange)
 
 [![CI for xUnit Tests with Versioning](https://github.com/ohjelmistotuotanto-miniprojekti/ohjelmistotuotanto-miniprojekti/actions/workflows/ci.yml/badge.svg)](https://github.com/ohjelmistotuotanto-miniprojekti/ohjelmistotuotanto-miniprojekti/actions/workflows/ci.yml)
 
