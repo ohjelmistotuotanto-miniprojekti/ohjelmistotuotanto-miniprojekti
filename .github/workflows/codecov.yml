@@ -51,8 +51,6 @@ jobs:
       - name: Generate Coverage Badge
         run: |
           python3 scripts/parse_coverage.py
-        env:
-          COVERAGE_FILE_PATH: ${{ env.COVERAGE_FILE_PATH }}
 
       - name: Update README with Coverage Badge
         run: |
