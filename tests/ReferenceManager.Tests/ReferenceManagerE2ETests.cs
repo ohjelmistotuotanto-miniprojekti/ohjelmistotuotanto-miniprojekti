@@ -1,4 +1,3 @@
-/*
 using Xunit;
 using System.IO;
 using System;
@@ -10,12 +9,14 @@ namespace ReferenceManager.Tests
 {
     public class EndToEndTests
     {
-        
+
         [Fact]
         public void EndToEnd_AddInProceedingsReference()
         {
+
             string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
             ReferenceManager.Program.FilePath = tempFilePath;
+            Console.WriteLine($"Writing to file: {Program.FilePath}");
 
             try
             {
@@ -34,7 +35,6 @@ namespace ReferenceManager.Tests
                     "", //month
                     "", //editor
                     "", //volume
-                    "", //Number
                     "", // series
                     "", // pages
                     "", // address
@@ -77,4 +77,3 @@ namespace ReferenceManager.Tests
         }
     }
 }
-*/
