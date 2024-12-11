@@ -1,4 +1,5 @@
-/*using Xunit;
+/*
+using Xunit;
 using System.IO;
 using System;
 using ReferenceManager;
@@ -9,6 +10,7 @@ namespace ReferenceManager.Tests
 {
     public class EndToEndTests
     {
+        
         [Fact]
         public void EndToEnd_AddInProceedingsReference()
         {
