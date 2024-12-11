@@ -35,21 +35,30 @@ jobs:
       - name: Build Tests
         run: dotnet build tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj
 
-      - name: Ensure TestResults Directory
-        run: mkdir -p $(pwd)/TestResults
-
+      # Run tests
       - name: Run tests with coverage
         run: |
+          mkdir -p $(pwd)/TestResults
           dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
           -p:CollectCoverage=true \
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=$(pwd)/TestResults/coverage.cobertura.xml \
           --diag:TestExecution.log
-          echo "Coverage output files in ./TestResults:"
-          ls -R ./TestResults || echo "No files found in TestResults"
+          echo "Coverage output files in $(pwd)/TestResults:"
+          ls -R $(pwd)/TestResults || echo "No files found in TestResults"
 
-      - name: Inspect TestResults Directory
-        run: ls -R ./TestResults
+      - name: Debug TestExecution Log
+        run: cat TestExecution.log || echo "No log file found"
+
+      - name: Locate Coverage File
+        run: |
+          coverage_file=$(find $(pwd) -name 'coverage.cobertura.xml' | head -n 1)
+          if [ -z "$coverage_file" ]; then
+            echo "Coverage file not found!"
+            exit 1
+          fi
+          echo "Found coverage file at $coverage_file"
+          echo "COVERAGE_FILE=$coverage_file" >> $GITHUB_ENV
 
       # Run Python script to generate badge
       - name: Generate Coverage Badge
