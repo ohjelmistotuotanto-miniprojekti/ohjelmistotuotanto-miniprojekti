@@ -1,3 +1,5 @@
+![Coverage](https://img.shields.io/badge/coverage-86.37%25-green)
+
 [![CI for xUnit Tests with Versioning](https://github.com/ohjelmistotuotanto-miniprojekti/ohjelmistotuotanto-miniprojekti/actions/workflows/ci.yml/badge.svg)](https://github.com/ohjelmistotuotanto-miniprojekti/ohjelmistotuotanto-miniprojekti/actions/workflows/ci.yml)
 
 # ReferenceManager
@@ -5,19 +7,22 @@
 A simple C# application for managing BibTeX references.
 
 # Project backlog
+
 https://docs.google.com/spreadsheets/d/1109rdzZxVDn1R0a3zG7uqhMdJKA6VQSDgxw8KljecDI
 
 # Definition of done
+
 Sprint 1:
-1. CI/CD environment for automated unit testing 
+
+1. CI/CD environment for automated unit testing
 2. Ability to add journal articles
-    1. System must allow users to add journal articles as references
-    2. System asks confirmation about operation
-    3. System gives a infomessage about success /failure
+   1. System must allow users to add journal articles as references
+   2. System asks confirmation about operation
+   3. System gives a infomessage about success /failure
 3. Generate BibTex file for LaTeX documents
-    1. The system must provide functionality to generate a BibTeX-formatted file from the references for use in LaTeX documents.
-    2. System will print the BibTeX -formatted input
-    3. System gives a infomessage about success /failure
+   1. The system must provide functionality to generate a BibTeX-formatted file from the references for use in LaTeX documents.
+   2. System will print the BibTeX -formatted input
+   3. System gives a infomessage about success /failure
 
 ## Developer / Collaborator instructions / Getting started
 
@@ -45,26 +50,23 @@ Ensure you have the following installed:
    cd ReferenceManager
    ```
 2. Restore all required NuGet packages:
-    ```
-    dotnet restore
-    ```
+   ```
+   dotnet restore
+   ```
 3. Build the solution to verify everything works:
-    ```
-    dotnet build --configuration Release
-    ```
+   ```
+   dotnet build --configuration Release
+   ```
 4. Run the application to test the main functionality:
-    ```
-    dotnet run --project ReferenceManager/ReferenceManager.csproj
-    ```
+   ```
+   dotnet run --project ReferenceManager/ReferenceManager.csproj
+   ```
 5. Run tests to ensure everything works:
-    ```
-    dotnet test --configuration Release
-    ```
+   ```
+   dotnet test --configuration Release
+   ```
 6. Linting:
-    ```
-    dotnet format ReferenceManager.sln --verify-no-changes # no formatting just checking
-    dotnet format ReferenceManager.sln # with automatic formatting
-    ```
-
-
-  
+   ```
+   dotnet format ReferenceManager.sln --verify-no-changes # no formatting just checking
+   dotnet format ReferenceManager.sln # with automatic formatting
+   ```
