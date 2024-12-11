@@ -7,15 +7,68 @@ using System.Threading.Tasks;
 
 namespace ReferenceManager
 {
+
     /// <summary>
     /// Abstract class for references.
     /// </summary>
     public abstract class Reference
     {
-        public required string Author { get; set; }
-        public required string Title { get; set; }
-        public required string Year { get; set; }
+        public bool isInt(string x)
+        {
+            return int.TryParse(x, out int value);
+        }
+
+        private string _author = "";
+        public string Author
+        {
+            get => _author;
+            set
+            {
+                _author = value;
+            }
+        }
+
+        private string _title = "";
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException("Title is required.");
+                }
+                _title = value;
+            }
+        }
+
+        private string _year = "";
+        public string Year
+        {
+            get => _year;
+            set
+            {
+                if (int.TryParse(value, out int year) && year >= 1 && year <= 9999)
+                {
+                    _year = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid year");
+                }
+            }
+        }
+        // Optionals
         public string? ReferenceKey { get; set; }
+        private string _month = "";
+        public string Month
+        {
+            get => _month;
+            set
+            {
+                _month = value;
+            }
+        }
 
         public string Key => ReferenceKey is not null && !string.IsNullOrWhiteSpace(ReferenceKey) ? ReferenceKey : GenerateKey();
 
@@ -63,13 +116,77 @@ namespace ReferenceManager
     /// </summary>
     public class ArticleReference : Reference
     {
-        public string? Journal { get; set; }
-        public string? Volume { get; set; }
-        public string? Number { get; set; }
-        public string? Pages { get; set; }
-        public string? Month { get; set; }
-        public string? Note { get; set; }
-        public string? Doi { get; set; }
+        private string _journal = "";
+        public string Journal
+        {
+            get => _journal;
+            set
+            {
+                _journal = value;
+                // Validation
+            }
+        }
+
+        private string _volume = "";
+        public string Volume
+        {
+            get => _volume;
+            set
+            {
+                if (!isInt(value))
+                {
+                    throw new ArgumentException("Volume must be a number");
+                }
+                _volume = value;
+
+            }
+        }
+
+        private string _pages = "";
+        public string Pages
+        {
+            get => _pages;
+            set
+            {
+                //_pages = value;
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else
+                {
+                    _pages = value;
+                }
+            }
+        }
+        private string _note = "";
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+            }
+        }
+
+        private string _doi = "";
+        public string Doi
+        {
+            get => _doi;
+            set
+            {
+                _doi = value;
+            }
+        }
 
         public override string ToBibtex()
         {
@@ -86,7 +203,6 @@ namespace ReferenceManager
             $"  year = {{{Year}}},\n" +
             (string.IsNullOrEmpty(Month) ? "" : $"  month = {{{Month}}}\n") +
             (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
-            (string.IsNullOrEmpty(Number) ? "" : $"  volume = {{{Volume}}},\n") +
             (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}}\n") +
             (string.IsNullOrEmpty(Note) ? "" : $"  note = {{{Note}}}\n") +
             (string.IsNullOrEmpty(Doi) ? "" : $"  doi = {{{Doi}}}\n") +
@@ -100,18 +216,67 @@ namespace ReferenceManager
     /// </summary>
     public class InProceedingsReference : Reference
     {
-        public string? BookTitle { get; set; }
+        private string _bookTitle = "";
+        public string BookTitle
+        {
+            get => _bookTitle;
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException("You must input a book title.");
+                }
+                _bookTitle = value;
+            }
+        }
+
+        private string _volume = "";
+        public string Volume
+        {
+            get => _volume;
+            set
+            {
+                if (!isInt(value))
+                {
+                    throw new ArgumentException("Volume must be a number");
+                }
+                _volume = value;
+            }
+        }
+
         public string? Editor { get; set; }
-        public string? Volume { get; set; }
         public string? Number { get; set; }
         public string? Series { get; set; }
-        public string? Pages { get; set; }
+
+        private string _pages = "";
+        public string Pages
+        {
+            get => _pages;
+            set
+            {
+                var input = value;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    var remove = new string[] { "--" };
+                    foreach (var c in remove)
+                    {
+                        input = input.Replace(c, string.Empty);
+                    }
+                    if (!input.All(char.IsDigit))
+                    {
+                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                    }
+                }
+                else
+                {
+                    _pages = value;
+                }
+            }
+        }
         public string? Address { get; set; }
-        public string? Month { get; set; }
         public string? Organization { get; set; }
         public string? Publisher { get; set; }
         public string? Note { get; set; }
-
 
         public override string ToBibtex()
         {
@@ -129,7 +294,6 @@ namespace ReferenceManager
             $"  year = {{{Year}}}\n" +
             (string.IsNullOrEmpty(Editor) ? "" : $"  editor = {{{Editor}}},\n") +
             (string.IsNullOrEmpty(Volume) ? "" : $"  volume = {{{Volume}}},\n") +
-            (string.IsNullOrEmpty(Number) ? "" : $"  number = {{{Number}}},\n") +
             (string.IsNullOrEmpty(Series) ? "" : $"  series = {{{Series}}},\n") +
             (string.IsNullOrEmpty(Pages) ? "" : $"  pages = {{{Pages}}},\n") +
             (string.IsNullOrEmpty(Address) ? "" : $"  address = {{{Address}}},\n") +

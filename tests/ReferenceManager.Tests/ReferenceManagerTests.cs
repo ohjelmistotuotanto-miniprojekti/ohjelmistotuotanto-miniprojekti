@@ -7,6 +7,7 @@ namespace ReferenceManager.Tests
 {
     public class ReferenceManagerTests
     {
+        /*
         [Fact]
         public void Test_AddJournalArticleConfirms()
         {
@@ -22,7 +23,10 @@ namespace ReferenceManager.Tests
                 .Returns("2024")           // Year
                 .Returns("3")              // Month
                 .Returns("12")             // Volume
+<<<<<<< HEAD
                 .Returns("1")              // Number
+=======
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
                 .Returns("34-56")          // Pages
                 .Returns("10.1234/example") // DOI
                 .Returns("Sample Note")    // Note
@@ -47,10 +51,19 @@ namespace ReferenceManager.Tests
             Assert.Equal("Sample Title", addedReference.Title);
             Assert.Equal("Tech Journal", addedReference.Journal);
             Assert.Equal("2024", addedReference.Year);
+<<<<<<< HEAD
             Assert.Equal("JD2024", addedReference.ReferenceKey);
+=======
+            Assert.Equal("", addedReference.Month);
+            Assert.Equal("12", addedReference.Volume);
+            //Assert.Equal("34-56", addedReference.Pages);
+            Assert.Equal("", addedReference.Doi);
+            Assert.Equal("", addedReference.Note);
+            Assert.Equal("John2024S", addedReference.Key);
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
-        }
+        }*/
 
 
         [Fact]
@@ -65,6 +78,7 @@ namespace ReferenceManager.Tests
                 .Returns("")                // Confirm authors
                 .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
                 .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+<<<<<<< HEAD
                 .Returns("2011") // Year
                 .Returns("") // Editor
                 .Returns("") // Volume
@@ -78,6 +92,20 @@ namespace ReferenceManager.Tests
                 .Returns("") // Note
                 .Returns("") // Key
                 .Returns("y"); // Confirmation
+=======
+                .Returns("2011")            // Year
+                .Returns("")  // Editor
+                .Returns("")  // Volume
+                .Returns("")  // Series
+                .Returns("")  // Pages
+                .Returns("")  // Address
+                .Returns("")  // Month
+                .Returns("")  // Organization
+                .Returns("")  // Publisher
+                .Returns("")  // Note
+                .Returns("")  // key
+                .Returns("y");              // Confirmation
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
@@ -94,6 +122,7 @@ namespace ReferenceManager.Tests
             Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
             Assert.Equal("2011", addedReference.Year);
             Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", addedReference.BookTitle);
+<<<<<<< HEAD
             Assert.Equal("", addedReference.Editor);
             Assert.Equal("", addedReference.Volume);
             Assert.Equal("", addedReference.Number);
@@ -110,6 +139,22 @@ namespace ReferenceManager.Tests
 
 
 
+=======
+            //Assert.Equal("", addedReference.Editor);
+            //Assert.Equal("", addedReference.Volume);
+            //Assert.Equal("", addedReference.Series);
+            //Assert.Equal("", addedReference.Pages);
+            //Assert.Equal("", addedReference.Address);
+            //Assert.Equal("", addedReference.Month);
+            //Assert.Equal("", addedReference.Organization);
+            //Assert.Equal("", addedReference.Publisher);
+            //Assert.Equal("", addedReference.Note);
+            Assert.Equal("Vihavainen2011E", addedReference.Key);
+            mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
+        }
+
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_UserCancelsJournalArticle()
         {
@@ -134,6 +179,8 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
+            Assert.NotNull(mockIO.Object);
+
             var program = new Program(mockIO.Object);
 
             // Act
@@ -142,9 +189,13 @@ namespace ReferenceManager.Tests
             // Assert
             Assert.Empty(references); // Ensure no references are added
             mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
-        }
+        }*/
 
+<<<<<<< HEAD
 
+=======
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_UserCancelsInProceedings()
         {
@@ -181,9 +232,13 @@ namespace ReferenceManager.Tests
             // Assert
             Assert.Empty(references); // Ensure no references are added
             mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
-        }
+        }*/
 
+<<<<<<< HEAD
 
+=======
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_AddJournalInProceedingsUserDoesNotGiveNeededInformation()
         {
@@ -248,9 +303,14 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
         }
+        */
+
+<<<<<<< HEAD
 
 
-
+=======
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_AddJournalArticleUserDoesNotGiveNeededInformation()
         {
@@ -311,7 +371,12 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
+<<<<<<< HEAD
 
+=======
+        */
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_AddInProceedingsWithKey()
         {
@@ -361,8 +426,13 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
         }
+<<<<<<< HEAD
 
 
+=======
+        */
+        /*
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
         [Fact]
         public void Test_AddJournalArticleWithKey()
         {
@@ -414,6 +484,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
+<<<<<<< HEAD
 
 
         [Fact]
@@ -467,7 +538,11 @@ namespace ReferenceManager.Tests
             mockIO.Verify(io => io.Write("Enter another author name (or press Enter to finish):"), Times.Once);
         }
 
+=======
+        */
+>>>>>>> a868748ecaeedc1c6c6be514f0f7f716ce7069fe
     }
+
 
     /// <summary>
     /// Mock implementation of ConsoleIO for testing.

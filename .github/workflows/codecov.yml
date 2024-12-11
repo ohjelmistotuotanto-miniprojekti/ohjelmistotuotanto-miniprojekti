@@ -1,0 +1,75 @@
+name: Code Coverage and Badge
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-tests-and-generate-badge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up .NET
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 9.0
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          dotnet restore
+
+      # Clean Build
+      - name: Clean Build
+        run: dotnet clean
+
+      # Build tests
+      - name: Build Tests
+        run: dotnet build tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj
+
+      # Run tests with coverage
+      - name: Run tests with coverage
+        run: |
+          dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults \
+          -p:CollectCoverage=true \
+          -p:CoverletOutputFormat=cobertura \
+          -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
+          --diag:TestExecution.log
+
+      # Run Python script to generate badge
+      - name: Generate Coverage Badge
+        run: |
+          python3 scripts/parse_coverage.py
+
+      - name: Update README with Coverage Badge
+        run: |
+          badge_content=$(cat coverage_badge.md)
+          if grep -q "!\[Coverage\]" README.md; then
+            # Replace the existing badge
+            sed -i "s|!\[Coverage\](https://img.shields.io/badge/coverage-[^)]*)|$badge_content|" README.md
+          else
+            # Append the badge at the top of the README
+            echo -e "$badge_content\n\n$(cat README.md)" > README.md
+          fi
+
+      # Commit and push the updated README
+      - name: Commit and push updated README
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Update README with coverage badge [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
