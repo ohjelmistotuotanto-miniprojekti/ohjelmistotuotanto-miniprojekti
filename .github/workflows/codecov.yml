@@ -25,12 +25,18 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: |
-          dotnet restore
+        run: dotnet restore
 
       # Clean Build
       - name: Clean Build
         run: dotnet clean
+
+      # Delete old TestResults directory
+      - name: Clean TestResults
+        run: |
+          if [ -d "./TestResults" ]; then
+            rm -rf ./TestResults
+          fi
 
       # Build tests
       - name: Build Tests
@@ -49,17 +55,14 @@ jobs:
 
       # Run Python script to generate badge
       - name: Generate Coverage Badge
-        run: |
-          python3 scripts/parse_coverage.py
+        run: python3 scripts/parse_coverage.py
 
       - name: Update README with Coverage Badge
         run: |
           badge_content=$(cat coverage_badge.md)
           if grep -q "!\[Coverage\]" README.md; then
-            # Replace the existing badge
             sed -i "s|!\[Coverage\](https://img.shields.io/badge/coverage-[^)]*)|$badge_content|" README.md
           else
-            # Append the badge at the top of the README
             echo -e "$badge_content\n\n$(cat README.md)" > README.md
           fi
 
