@@ -47,18 +47,6 @@ jobs:
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
           --diag:TestExecution.log
 
-      # Locate Coverage File
-      - name: Locate Coverage File
-        id: locate-coverage
-        run: |
-          coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
-          if [ -z "$coverage_file" ]; then
-            echo "Coverage file not found!"
-            exit 1
-          fi
-          echo "COVERAGE_FILE_PATH=$coverage_file" >> $GITHUB_ENV
-        shell: bash
-
       # Run Python script to generate badge
       - name: Generate Coverage Badge
         run: |
