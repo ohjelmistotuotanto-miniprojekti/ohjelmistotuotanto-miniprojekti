@@ -46,12 +46,14 @@ jobs:
       - name: Run tests with coverage
         run: |
           dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./TestResults \
           -p:CollectCoverage=true \
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
+          --results-directory ./TestResults \
           --diag:TestExecution.log
+
+      - name: Inspect TestResults Directory
+        run: ls -R ./TestResults
 
       # Run Python script to generate badge
       - name: Generate Coverage Badge
