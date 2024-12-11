@@ -38,14 +38,21 @@ jobs:
       # Run tests
       - name: Run tests with coverage
         run: |
+          cd tests/ReferenceManager.Tests
+          dotnet test ReferenceManager.Tests.csproj \
+            -p:CollectCoverage=true \
+            -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
+            -p:CoverletOutputFormat=cobertura
+
+      - name: Verify directory creation
+        run: |
           mkdir -p $(pwd)/TestResults
-          dotnet test tests/ReferenceManager.Tests/ReferenceManager.Tests.csproj \
-          -p:CollectCoverage=true \
-          -p:CoverletOutputFormat=cobertura \
-          -p:CoverletOutput=$(pwd)/TestResults/coverage.cobertura.xml \
-          --diag:TestExecution.log
-          echo "Coverage output files in $(pwd)/TestResults:"
-          ls -R $(pwd)/TestResults || echo "No files found in TestResults"
+          echo "This is a test file" > $(pwd)/TestResults/testfile.txt
+          echo "Contents of TestResults directory:"
+          ls -R $(pwd)/TestResults
+
+      - name: List all TestResults directories
+        run: find . -type d -name "TestResults" -print
 
       - name: Debug TestExecution Log
         run: cat TestExecution.log || echo "No log file found"
