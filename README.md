@@ -65,7 +65,11 @@ Ensure you have the following installed:
    ```
    dotnet test --configuration Release
    ```
-6. Linting:
+6. Code coverage:
+   ```
+   dotnet test --collect:"XPlat Code Coverage"
+   ```
+7. Linting:
    ```
    dotnet format ReferenceManager.sln --verify-no-changes # no formatting just checking
    dotnet format ReferenceManager.sln # with automatic formatting
