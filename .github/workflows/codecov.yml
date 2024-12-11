@@ -51,16 +51,6 @@ jobs:
       - name: Inspect TestResults Directory
         run: ls -R ./TestResults
 
-      - name: Locate Coverage File
-        run: |
-          coverage_file=$(find . -name 'coverage.cobertura.xml' | head -n 1)
-          if [ -z "$coverage_file" ]; then
-            echo "Coverage file not found!"
-            exit 1
-          fi
-          echo "Found coverage file at $coverage_file"
-          echo "COVERAGE_FILE=$coverage_file" >> $GITHUB_ENV
-
       # Run Python script to generate badge
       - name: Generate Coverage Badge
         run: python3 scripts/parse_coverage.py
