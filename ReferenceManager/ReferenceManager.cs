@@ -1,6 +1,9 @@
 using System;
+using System.ComponentModel.Design;
 
 using FluentAssertions.Equivalency;
+
+using Newtonsoft.Json;
 
 namespace ReferenceManager
 {
@@ -88,18 +91,19 @@ namespace ReferenceManager
         /// </summary>
         public string GiveUserInputFromMandatoryField(string field)
         {
-            string input;
+            string? input;
             do
             {
                 _io.Write(field + "*: ");
-                input = _io.Read().Trim();
-                if (string.IsNullOrEmpty(input))
+                input = _io.Read();
+
+                if (string.IsNullOrWhiteSpace(input))
                 {
                     _io.Write(field + " cannot be empty. Please enter again.");
                 }
-            } while (string.IsNullOrEmpty(input));
+            } while (string.IsNullOrWhiteSpace(input));
 
-            return input;
+            return input.Trim();
         }
 
         /// <summary>
@@ -108,8 +112,8 @@ namespace ReferenceManager
         public void AddJournalArticle(List<Reference> references)
         {
             var newArticleReference = new ArticleReference();
-            _io.Write("mandatory fields are followed by *");
-            string author = GiveUserInputFromMandatoryField("Authors");
+            _io.Write("Mandatory fields are followed by *");
+            string author = GetAuthors();
             newArticleReference.Author = author;
             string title = GiveUserInputFromMandatoryField("Title");
             newArticleReference.Title = title;
@@ -202,16 +206,16 @@ namespace ReferenceManager
             {
                 _io.Write("Failed to add reference to BibTeX file.");
             }
-
         }
+
 
         public void AddInProceedings(List<Reference> references)
         {
             _io.Write("Adding an inproceedings article...");
-            _io.Write("mandatory fields are followed by *");
+            _io.Write("Mandatory fields are followed by *");
             var InproceedingsReference = new InProceedingsReference();
 
-            string author = GiveUserInputFromMandatoryField("Authors");
+            string author = GetAuthors();
             InproceedingsReference.Author = author;
 
             while (true)
@@ -366,6 +370,40 @@ namespace ReferenceManager
                 _io.Write("Failed to add inproceedings article to BibTeX file.");
             }
         }
+
+
+        /// <summary>
+        /// Collects authors from the user one author at time
+        /// </summary>
+        /// <returns> A string of authors</returns>
+        public string GetAuthors()
+        {
+            List<string> authors = new List<string>();
+
+            while (true)
+            {
+                _io.Write(authors.Count == 0
+                    ? "Enter author name (at least one author is required):"
+                    : "Enter another author name (or press Enter to finish):");
+                string? author = _io.Read();
+
+                if (!string.IsNullOrWhiteSpace(author))
+                {
+                    authors.Add(author.Trim());
+                }
+                else if (authors.Count > 0)
+                {
+                    break; // Exit if the user presses Enter after adding at least one author
+                }
+                else
+                {
+                    _io.Write("At least one author is required. Please add an author.");
+                }
+            }
+
+            return string.Join(", ", authors);
+        }
+
 
         /// <summary>
         /// Lists all references from the BibTeX file.
