@@ -43,13 +43,15 @@ jobs:
           -p:CoverletOutputFormat=cobertura \
           -p:CoverletOutput=./TestResults/coverage.cobertura.xml \
           --diag:TestExecution.log
+          echo "Coverage output files in ./TestResults:"
+          ls -R ./TestResults || echo "No files found in TestResults"
 
       - name: Inspect TestResults Directory
         run: ls -R ./TestResults
 
       - name: Locate Coverage File
         run: |
-          coverage_file=$(find ./TestResults -name 'coverage.cobertura.xml' | head -n 1)
+          coverage_file=$(find . -name 'coverage.cobertura.xml' | head -n 1)
           if [ -z "$coverage_file" ]; then
             echo "Coverage file not found!"
             exit 1
