@@ -19,14 +19,16 @@ namespace ReferenceManager
         public static string FilePath { get; set; } = "references.bib";
 
         private readonly ConsoleIO _io;
+        private readonly IReferenceLoader _referenceLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Program"/> class with the specified IO handler.
         /// </summary>
         /// <param name="io">An instance of ConsoleIO for handling input and output.</param>
-        public Program(ConsoleIO io)
+        public Program(ConsoleIO io, IReferenceLoader referenceLoader)
         {
             _io = io;
+            _referenceLoader = referenceLoader;
         }
 
         /// <summary>
@@ -69,18 +71,17 @@ namespace ReferenceManager
 
         public void AddReference(List<Reference> references)
         {
-            _io.Write("Select article type:");
-            _io.Write("1. Article");
-            _io.Write("2. Inproceedings");
-
+            _io.Write("Select article type (enter '1' or 'article' for article, '2' or 'inproceedings' for inproceedings):");
             string choice = _io.Read().Trim();
 
             switch (choice)
             {
                 case "1":
+                case "article":
                     AddJournalArticle(references);
                     break;
                 case "2":
+                case "inproceedings":
                     AddInProceedings(references);
                     break;
                 default:
@@ -540,7 +541,7 @@ namespace ReferenceManager
             // Ask the user to select filter criteria
             Console.WriteLine("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");
             Console.WriteLine("Available criteria: author, journal, year, title");
-            string selectedCriteria = Console.ReadLine()?.Trim().ToLower();
+            string? selectedCriteria = Console.ReadLine()?.Trim().ToLower();
 
             if (string.IsNullOrEmpty(selectedCriteria))
             {
@@ -623,6 +624,7 @@ namespace ReferenceManager
         }
     }
 
+
     /// <summary>
     /// Handles basic input and output for console-based applications.
     /// Provides methods to write to the console and read user input.
@@ -660,7 +662,8 @@ namespace ReferenceManager
         public static void Main(string[] args)
         {
             var io = new ConsoleIO();
-            var program = new Program(io);
+            var referenceLoader = new FileReferenceLoader(Program.FilePath);
+            var program = new Program(io, referenceLoader);
             program.Run();
         }
     }
