@@ -596,7 +596,7 @@ namespace ReferenceManager
                 r.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase)
                 || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Split(',').Any(writer => writer.Trim().Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
                 || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)))))
-            ) // Add a closing parenthesis here
+            )
             && (string.IsNullOrEmpty(journalFilter) || (r is ArticleReference article && article.Journal != null) && (
                 (journalFilter.StartsWith("\"") && journalFilter.EndsWith("\"") && article.Journal.Equals(journalFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
                 || (!journalFilter.StartsWith("\"") && !journalFilter.EndsWith("\"") && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))
