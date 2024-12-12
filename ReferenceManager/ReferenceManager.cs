@@ -590,29 +590,41 @@ namespace ReferenceManager
                 }
             }
 
-        var authorFilters = new string[]{};
-        if(!string.IsNullOrEmpty(authorFilter)){
-        authorFilters = authorFilter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(a => a.Trim())
-            .ToArray();
-        }
+        // Split author filter into individual authors
+        var authorFilters = string.IsNullOrEmpty(authorFilter)
+            ? new string[] {}
+            : authorFilter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(a => a.Trim())
+                .ToArray();
 
-        _io.Write("Author: " + string.Join(", ", authorFilters));
+        // Apply filters to references
+        var filteredReferences = references
+            .Where(r => 
+                // Author filter
+                (string.IsNullOrEmpty(authorFilter) || 
+                (r.Author != null && authorFilters.All(a => 
+                    (a.StartsWith("\"") && a.EndsWith("\"") && r.Author.Split(',').Any(writer => writer.Trim().Equals(a.Trim('"'), StringComparison.OrdinalIgnoreCase))) ||
+                    (!a.StartsWith("\"") && !a.EndsWith("\"") && r.Author.Split(',').Any(writer => writer.Trim().Contains(a, StringComparison.OrdinalIgnoreCase)))
+                )))
 
-            // Apply filters
-        var filteredReferences = references.Where(r =>
-            (string.IsNullOrEmpty(authorFilter) || (r.Author != null && authorFilters.All(a =>
-            a.StartsWith("\"") && a.EndsWith("\"") && (r.Author.Split(',').Any(writer => writer.Trim().Equals(a.Trim('"'), StringComparison.OrdinalIgnoreCase))) ||
-            !a.StartsWith("\"") && !a.EndsWith("\"") && (r.Author.Split(',').Any(writer => writer.Trim().Contains(a, StringComparison.OrdinalIgnoreCase))))))
-            && (string.IsNullOrEmpty(journalFilter) || (r is ArticleReference article && article.Journal != null) && (
-                (journalFilter.StartsWith("\"") && journalFilter.EndsWith("\"") && article.Journal.Equals(journalFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
-                || (!journalFilter.StartsWith("\"") && !journalFilter.EndsWith("\"") && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))
-            ))
-            && (string.IsNullOrEmpty(yearFilter) || (r.Year != null && r.Year.Equals(yearFilter, StringComparison.OrdinalIgnoreCase)))
-            && (string.IsNullOrEmpty(titleFilter) || (r.Title != null && (
-                (!titleFilter.StartsWith("\"") && !titleFilter.EndsWith("\"") && r.Title.Contains(titleFilter, StringComparison.OrdinalIgnoreCase))
-                || (titleFilter.StartsWith("\"") && titleFilter.EndsWith("\"") && r.Title.Equals(titleFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)))))
-        ).ToList();
+                // Journal filter
+                && (string.IsNullOrEmpty(journalFilter) || 
+                    (r is ArticleReference article && article.Journal != null && (
+                        (journalFilter.StartsWith("\"") && journalFilter.EndsWith("\"") && article.Journal.Equals(journalFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)) ||
+                        (!journalFilter.StartsWith("\"") && !journalFilter.EndsWith("\"") && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))
+                    )))
+
+                // Year filter
+                && (string.IsNullOrEmpty(yearFilter) || (r.Year != null && r.Year.Equals(yearFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)))
+
+                // Title filter
+                && (string.IsNullOrEmpty(titleFilter) || 
+                    (r.Title != null && (
+                        (!titleFilter.StartsWith("\"") && !titleFilter.EndsWith("\"") && r.Title.Contains(titleFilter, StringComparison.OrdinalIgnoreCase)) ||
+                        (titleFilter.StartsWith("\"") && titleFilter.EndsWith("\"") && r.Title.Equals(titleFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
+                    )))
+            )
+            .ToList();
 
             // Display results
             if (filteredReferences.Count == 0)
