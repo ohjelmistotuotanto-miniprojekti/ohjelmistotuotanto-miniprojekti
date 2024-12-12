@@ -590,13 +590,20 @@ namespace ReferenceManager
                 }
             }
 
+        var authorFilters = new string[]{};
+        if(!string.IsNullOrEmpty(authorFilter)){
+        authorFilters = authorFilter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(a => a.Trim())
+            .ToArray();
+        }
+
+        _io.Write("Author: " + string.Join(", ", authorFilters));
+
             // Apply filters
         var filteredReferences = references.Where(r =>
-            (string.IsNullOrEmpty(authorFilter) || (r.Author != null && (
-                r.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase)
-                || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Split(',').Any(writer => writer.Trim().Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
-                || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)))))
-            )
+            (string.IsNullOrEmpty(authorFilter) || (r.Author != null && authorFilters.All(a =>
+            a.StartsWith("\"") && a.EndsWith("\"") && (r.Author.Split(',').Any(writer => writer.Trim().Equals(a.Trim('"'), StringComparison.OrdinalIgnoreCase))) ||
+            !a.StartsWith("\"") && !a.EndsWith("\"") && (r.Author.Split(',').Any(writer => writer.Trim().Contains(a, StringComparison.OrdinalIgnoreCase))))))
             && (string.IsNullOrEmpty(journalFilter) || (r is ArticleReference article && article.Journal != null) && (
                 (journalFilter.StartsWith("\"") && journalFilter.EndsWith("\"") && article.Journal.Equals(journalFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
                 || (!journalFilter.StartsWith("\"") && !journalFilter.EndsWith("\"") && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))
