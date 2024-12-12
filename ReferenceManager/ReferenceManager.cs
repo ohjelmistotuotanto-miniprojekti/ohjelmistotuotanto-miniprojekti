@@ -404,6 +404,7 @@ namespace ReferenceManager
                 }
             }
 
+            authors.Sort();
             return string.Join(", ", authors);
         }
 
