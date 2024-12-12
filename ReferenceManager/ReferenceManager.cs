@@ -51,6 +51,9 @@ namespace ReferenceManager
                     case "list":
                         ListReferences(references);
                         break;
+                    case "filter":
+                        FilterReferences();
+                        break;
                     case "help":
                         ShowHelp();
                         break;
@@ -434,12 +437,189 @@ namespace ReferenceManager
             }
         }
 
+
+        public List<Reference> LoadReferencesFromFile()
+        {
+            var references = new List<Reference>();
+
+            if (!File.Exists(Program.FilePath))
+            {
+                Console.WriteLine("References file not found.");
+                return references;
+            }
+
+            try
+            {
+                // Read all lines from the BibTeX file
+                string[] lines = File.ReadAllLines(Program.FilePath);
+
+                // Example parsing logic (you'll need to adapt this based on your BibTeX format)
+                Reference? currentReference = null;
+
+                foreach (string line in lines)
+                {
+                    if (line.StartsWith("@article") || line.StartsWith("@inproceedings"))
+                    {
+                        if (currentReference != null)
+                        {
+                            references.Add(currentReference);
+                        }
+
+                        // Determine reference type
+                        currentReference = line.StartsWith("@article")
+                            ? new ArticleReference()
+                            : new InProceedingsReference();
+                    }
+                    else if (line.Contains("=") && currentReference != null)
+                    {
+                        // Parse key-value pairs (e.g., author = {John Doe})
+                        string[] parts = line.Split(new[] { '=' }, 2);
+                        if (parts.Length == 2)
+                        {
+                            string key = parts[0].Trim().ToLower();
+                            string value = parts[1].Trim().Trim('{', '}', ',');
+
+                            // Assign values to the appropriate property
+                            switch (key)
+                            {
+                                case "author":
+                                    currentReference.Author = value;
+                                    break;
+                                case "title":
+                                    currentReference.Title = value;
+                                    break;
+                                case "year":
+                                    currentReference.Year = value;
+                                    break;
+                                case "journal" when currentReference is ArticleReference article:
+                                    article.Journal = value;
+                                    break;
+                                case "booktitle" when currentReference is InProceedingsReference inProc:
+                                    inProc.BookTitle = value;
+                                    break;
+                                    // Handle other fields as needed
+                            }
+                        }
+                    }
+                }
+
+                // Add the last reference if not null
+                if (currentReference != null)
+                {
+                    references.Add(currentReference);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading references from file: {ex.Message}");
+            }
+
+            return references;
+        }
+
+
+        /// <summary>
+        /// Filters the list of references by a given criterion and value.
+        /// </summary>
+        /// <param name="references">The list of references to filter.</param>
+        /// <remarks>
+        /// Supported filter criteria are "author", "journal", "year", and "title".
+        /// The filter is case-insensitive.
+        /// </remarks>
+        public void FilterReferences()
+        {
+            // Load references from the file
+            List<Reference> references = LoadReferencesFromFile();
+
+            if (references.Count == 0)
+            {
+                Console.WriteLine("No references found in the file.");
+                return;
+            }
+
+            // Ask the user to select filter criteria
+            Console.WriteLine("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");
+            Console.WriteLine("Available criteria: author, journal, year, title");
+            string selectedCriteria = Console.ReadLine()?.Trim().ToLower();
+
+            if (string.IsNullOrEmpty(selectedCriteria))
+            {
+                Console.WriteLine("No criteria selected. Displaying all references.");
+                ListReferences(references);
+                return;
+            }
+
+            // Parse selected criteria
+            var criteriaList = selectedCriteria.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Distinct();
+
+            // Initialize filter values
+            string? authorFilter = null;
+            string? journalFilter = null;
+            string? yearFilter = null;
+            string? titleFilter = null;
+
+            // Prompt the user for each selected criterion
+            foreach (var criterion in criteriaList)
+            {
+                switch (criterion)
+                {
+                    case "author":
+                        Console.WriteLine("Enter author (or leave blank to skip): ");
+                        authorFilter = Console.ReadLine()?.Trim();
+                        break;
+                    case "journal":
+                        Console.WriteLine("Enter journal (or leave blank to skip): ");
+                        journalFilter = Console.ReadLine()?.Trim();
+                        break;
+                    case "year":
+                        Console.WriteLine("Enter year (or leave blank to skip): ");
+                        yearFilter = Console.ReadLine()?.Trim();
+                        break;
+                    case "title":
+                        Console.WriteLine("Enter title (or leave blank to skip): ");
+                        titleFilter = Console.ReadLine()?.Trim();
+                        break;
+                    default:
+                        Console.WriteLine($"Unknown criterion: {criterion}");
+                        break;
+                }
+            }
+
+            // Apply filters
+            var filteredReferences = references.Where(r =>
+                (string.IsNullOrEmpty(authorFilter) || (r.Author != null && r.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase))) &&
+                (string.IsNullOrEmpty(journalFilter) || (r is ArticleReference article && article.Journal != null && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))) &&
+                (string.IsNullOrEmpty(yearFilter) || (r.Year != null && r.Year.Equals(yearFilter, StringComparison.OrdinalIgnoreCase))) &&
+                (string.IsNullOrEmpty(titleFilter) || (r.Title != null && r.Title.Contains(titleFilter, StringComparison.OrdinalIgnoreCase)))
+            ).ToList();
+
+            // Display results
+            if (filteredReferences.Count == 0)
+            {
+                Console.WriteLine("No references match the given criteria.");
+            }
+            else
+            {
+                Console.WriteLine($"Filtered references (matching criteria):");
+                foreach (var reference in filteredReferences)
+                {
+                    Console.WriteLine(reference.ToBibtex());
+                }
+            }
+        }
+
+
         /// <summary>
         /// Displays a help message showing all available commands.
         /// </summary>
         private void ShowHelp()
         {
-            _io.Write("Available commands: add, list, help, exit");
+            _io.Write("Available commands:");
+            _io.Write("  add - Add a new reference");
+            _io.Write("  list - List all references");
+            _io.Write("  filter - Filter references by author, journal, year, or title");
+            _io.Write("  help - Show available commands");
+            _io.Write("  exit - Exit the application");
         }
     }
 
