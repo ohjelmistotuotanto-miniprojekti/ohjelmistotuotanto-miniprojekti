@@ -392,14 +392,12 @@ namespace ReferenceManager.Tests
         }
 
         [Fact]
-
         public void filterbyOneAuthor()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
             var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
-
             references.Add(new ArticleReference
             {
                 Author = "John Doe",
@@ -420,16 +418,21 @@ namespace ReferenceManager.Tests
             // Act
             program.FilterReferences(references);
 
-            // Verify relevant output
+            // Verify initial prompts
             mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
             mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
             mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
             mockIO.Verify(io => io.Write("Enter author (or leave blank to skip): "), Times.Once);
-            mockIO.Verify(io => io.Write("@article{John2024S"), Times.Once);
-            mockIO.Verify(io => io.Write("author ={John Doe}"), Times.Once);
-            mockIO.Verify(io => io.Write("title = {Sample Title},"), Times.Once);
-            mockIO.Verify(io => io.Write("journal = {Tech Journal},"), Times.Once);
-            mockIO.Verify(io => io.Write("title = {Sample Title},"), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {John Doe}") &&
+                s.Contains("title = {Sample Title}") &&
+                s.Contains("journal = {Tech Journal}") &&
+                s.Contains("year = {2024}"))),
+                Times.Once);
         }
 
     }

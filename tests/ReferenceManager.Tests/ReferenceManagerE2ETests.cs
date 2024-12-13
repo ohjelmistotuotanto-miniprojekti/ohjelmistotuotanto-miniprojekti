@@ -180,7 +180,6 @@ namespace ReferenceManager.Tests
             foreach (var expected in expectedHelpMenu)
             {
                 bool found = outputs.Any(actual => actual.Equals(expected, StringComparison.Ordinal));
-                Console.WriteLine($"Found '{expected}': {found}");
             }
         }
 
