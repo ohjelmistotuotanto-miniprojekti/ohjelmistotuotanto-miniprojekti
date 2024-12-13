@@ -12,6 +12,7 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
@@ -35,7 +36,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddInProceedings(references);
@@ -67,6 +68,7 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
@@ -89,7 +91,7 @@ namespace ReferenceManager.Tests
 
             Assert.NotNull(mockIO.Object);
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddJournalArticle(references);
@@ -105,6 +107,7 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
@@ -129,7 +132,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddInProceedings(references);
@@ -145,6 +148,7 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
@@ -168,7 +172,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddInProceedings(references);
@@ -184,12 +188,13 @@ namespace ReferenceManager.Tests
             Assert.Equal("4", addedReference.Volume);
         }
 
-        
+
         [Fact]
         public void Test_AddJournalArticleWithInvalidInputs()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             mockIO.SetupSequence(io => io.Read())
@@ -215,7 +220,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddJournalArticle(references);
@@ -231,7 +236,7 @@ namespace ReferenceManager.Tests
             Assert.Equal("14--16", addedReference.Pages);
             Assert.Equal("January", addedReference.Month);
         }
-        
+
 
 
         [Fact]
@@ -239,6 +244,7 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
@@ -262,7 +268,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddInProceedings(references);
@@ -279,12 +285,13 @@ namespace ReferenceManager.Tests
         }
 
 
-        
+
         [Fact]
         public void Test_AddJournalArticleWithKey()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             mockIO.SetupSequence(io => io.Read())
@@ -303,7 +310,7 @@ namespace ReferenceManager.Tests
 
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddJournalArticle(references);
@@ -317,23 +324,29 @@ namespace ReferenceManager.Tests
             // Verify relevant output
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
-        
+
         [Fact]
         public void HelpCommandListsAvailableCommands()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             mockIO.SetupSequence(io => io.Read())
                 .Returns("help")
                 .Returns("exit");
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.Run();
 
             // Assert
-            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Available commands: add, list, help, exit"))), Times.Once);
+            mockIO.Verify(io => io.Write("Available commands:"), Times.Once);
+            mockIO.Verify(io => io.Write("  add - Add a new reference"), Times.Once);
+            mockIO.Verify(io => io.Write("  list - List all references"), Times.Once);
+            mockIO.Verify(io => io.Write("  filter - Filter references by author, journal, year, or title"), Times.Once);
+            mockIO.Verify(io => io.Write("  help - Show available commands"), Times.Once);
+            mockIO.Verify(io => io.Write("  exit - Exit the application"), Times.Once);
             mockIO.Verify(io => io.Write("Exiting the application. Goodbye!"), Times.Once);
         }
 
@@ -342,11 +355,12 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             mockIO.SetupSequence(io => io.Read())
                 .Returns("unknown")
                 .Returns("exit");
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.Run();
@@ -360,12 +374,13 @@ namespace ReferenceManager.Tests
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             mockIO.SetupSequence(io => io.Read())
                 .Returns("add")
                 .Returns("invalidcommand")
                 .Returns("exit");
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.Run();
@@ -376,8 +391,117 @@ namespace ReferenceManager.Tests
 
         }
 
-    }
+        [Fact]
+        public void filterbyOneAuthor()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new ArticleReference
+            {
+                Author = "John Doe",
+                Title = "Sample Title",
+                Journal = "Tech Journal",
+                Year = "2024"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "Liisa Doe",
+                Title = "Sample Title2",
+                Journal = "Tech Journal2",
+                Year = "2022"
+            });
 
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("author")
+                .Returns("John Doe");
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter author (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {John Doe}") &&
+                s.Contains("title = {Sample Title}") &&
+                s.Contains("journal = {Tech Journal}") &&
+                s.Contains("year = {2024}"))),
+                Times.Once);
+        }
+
+        [Fact]
+        public void filterbyOneAuthorButFoundMultiple()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new ArticleReference
+            {
+                Author = "John Doe",
+                Title = "Sample Title",
+                Journal = "Tech Journal",
+                Year = "2024"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "Liisa Doe",
+                Title = "Sample Title2",
+                Journal = "Tech Journal2",
+                Year = "2022"
+            });
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("author")
+                .Returns("Doe");
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter author (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {John Doe}") &&
+                s.Contains("title = {Sample Title}") &&
+                s.Contains("journal = {Tech Journal}") &&
+                s.Contains("year = {2024}"))),
+                Times.Once);
+
+            // Verify second reference
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {Liisa Doe}") &&
+                s.Contains("title = {Sample Title2}") &&
+                s.Contains("journal = {Tech Journal2}") &&
+                s.Contains("year = {2022}"))),
+                Times.Once);
+        }
+    }
 
     /// <summary>
     /// Mock implementation of ConsoleIO for testing.
