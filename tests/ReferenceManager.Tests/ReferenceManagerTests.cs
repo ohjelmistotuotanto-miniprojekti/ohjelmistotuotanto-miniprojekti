@@ -422,8 +422,9 @@ namespace ReferenceManager.Tests
 
             // Verify relevant output
             mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
             mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
-            mockIO.Verify(io => io.Write("Enter author (or leave blank to skip):"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter author (or leave blank to skip): "), Times.Once);
             mockIO.Verify(io => io.Write("@article{John2024S"), Times.Once);
             mockIO.Verify(io => io.Write("author ={John Doe}"), Times.Once);
             mockIO.Verify(io => io.Write("title = {Sample Title},"), Times.Once);
