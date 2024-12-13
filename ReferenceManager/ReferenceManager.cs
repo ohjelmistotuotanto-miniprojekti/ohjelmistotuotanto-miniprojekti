@@ -590,24 +590,21 @@ namespace ReferenceManager
                 }
             }
 
+
             // Apply filters
             var filteredReferences = references.Where(r =>
                 (string.IsNullOrEmpty(authorFilter) || (r.Author != null && (
                 r.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase)
                 || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))))) &&
-                (string.IsNullOrEmpty(journalFilter) || (r is ArticleReference article && article.Journal != null) && (
+                (string.IsNullOrEmpty(journalFilter) || r is ArticleReference article && article.Journal != null && (
                     (journalFilter.StartsWith("\"") && journalFilter.EndsWith("\"") && article.Journal.Equals(journalFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))
                     || (!journalFilter.StartsWith("\"") && !journalFilter.EndsWith("\"") && article.Journal.Contains(journalFilter, StringComparison.OrdinalIgnoreCase))
                 ))
-                &&(string.IsNullOrEmpty(yearFilter) || (r.Year != null && r.Year.Equals(yearFilter, StringComparison.OrdinalIgnoreCase))) &&
+                && (string.IsNullOrEmpty(yearFilter) || (r.Year != null && r.Year.Equals(yearFilter, StringComparison.OrdinalIgnoreCase))) &&
                 (string.IsNullOrEmpty(titleFilter) || (r.Title != null && (
                 (!titleFilter.StartsWith("\"") && !titleFilter.EndsWith("\"") && r.Title.Contains(titleFilter, StringComparison.OrdinalIgnoreCase))
-                || (titleFilter.StartsWith("\"") && titleFilter.EndsWith("\"") && r.Title.Equals(titleFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))))) 
+                || (titleFilter.StartsWith("\"") && titleFilter.EndsWith("\"") && r.Title.Equals(titleFilter.Trim('"'), StringComparison.OrdinalIgnoreCase)))))
             ).ToList();
-
-            /*  (!authorFilter.StartsWith("\"") && !authorFilter.EndsWith("\"") && r.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase))
-                || (authorFilter.StartsWith("\"") && authorFilter.EndsWith("\"") && r.Author.Equals(authorFilter.Trim('"'), StringComparison.OrdinalIgnoreCase))))) &&
-            */
 
 
             // Display results
