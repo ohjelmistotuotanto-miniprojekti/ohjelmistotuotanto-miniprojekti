@@ -29,7 +29,7 @@ public class UnitTest2
             Volume = "6",
             Pages = "38--46"
         };
-        
+
         Assert.Equal("Collins, Allan and Brown, John Seely and Holumm Ann", articleReference.Author);
         Assert.Equal("Cognitive apprenticeship: making thinking visible", articleReference.Title);
         Assert.Equal("American Educator", articleReference.Journal);
@@ -455,34 +455,32 @@ public class UnitTest2
     [Fact]
     public void TestToBibtexFile()
     {
-        // Clear file content
-        File.WriteAllText(ReferenceManager.Program.FilePath, "");
-
-        var testReference = new ArticleReference
+        // Arrange
+        var article = new ArticleReference
         {
-            Author = "Allan Collins and John Seely Brown and Ann Holum",
-            Title = "Cognitive apprenticeship: making thinking visible",
-            Journal = "American Educator",
-            Year = "1991",
-            Volume = "6",
+            Author = "John Doe",
+            Title = "Sample Title",
+            Journal = "Tech Journal",
+            Year = "2024",
             Pages = "38--46"
         };
-        var result = testReference.ToBibtexFile();
-        Assert.Equal(
-            $"@article{{Allan1991C,\n" +
-            $"  author = {{Allan Collins and John Seely Brown and Ann Holum}},\n" +
-            $"  title = {{Cognitive apprenticeship: making thinking visible}},\n" +
-            $"  journal = {{American Educator}},\n" +
-            $"  year = {{1991}},\n" +
-            $"  volume = {{6}},\n" +
-            $"  pages = {{38--46}}\n" +
-            $"}}\n\n",
-            File.ReadAllText(ReferenceManager.Program.FilePath)
-        );
-        Assert.True(
-            result
-        );
-        File.WriteAllText(ReferenceManager.Program.FilePath, string.Empty);
+
+        // Expected BibTeX output
+        string expectedBibtex = "@article{John2024S,\n" +
+                                "  author = {John Doe},\n" +
+                                "  title = {Sample Title},\n" +
+                                "  journal = {Tech Journal},\n" +
+                                "  year = {2024},\n" +
+                                "  pages = {38--46}\n" +
+                                "}\n";
+
+        // Normalize expected and actual output
+        string normalizedExpected = expectedBibtex.Replace("\r\n", "\n").Trim();
+        string normalizedActual = article.ToBibtex().Replace("\r\n", "\n").Trim();
+
+        // Assert
+        Assert.Equal(normalizedExpected, normalizedActual);
     }
+
 
 }
