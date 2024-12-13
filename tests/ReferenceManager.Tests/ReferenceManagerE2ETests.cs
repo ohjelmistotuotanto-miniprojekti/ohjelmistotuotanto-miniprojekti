@@ -147,7 +147,42 @@ namespace ReferenceManager.Tests
             }
         }
 
+        [Fact]
+        public void EndToEnd_HelpCommandOutput()
+        {
+            // Arrange
+            var consoleIO = new MockConsoleIO(new[] {
+                "help",
+                "exit"
+            });
 
+            var mockLoader = new Mock<IReferenceLoader>();
+            mockLoader.Setup(loader => loader.LoadReferences()).Returns(new List<Reference>());
+            var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+
+            // Act
+            program.Run();
+
+            // Assert
+            var outputs = consoleIO.GetOutputs().ToList();
+
+            var expectedHelpMenu = new[]
+            {
+                "Available commands:",
+                " add - Add a new reference",
+                " list - List all references",
+                " filter - Filter references by author, journal, year, or title",
+                " help - Show available commands",
+                " exit - Exit the application"
+            };
+
+            // Verify each line individually and print result
+            foreach (var expected in expectedHelpMenu)
+            {
+                bool found = outputs.Any(actual => actual.Equals(expected, StringComparison.Ordinal));
+                Console.WriteLine($"Found '{expected}': {found}");
+            }
+        }
     }
 }
 

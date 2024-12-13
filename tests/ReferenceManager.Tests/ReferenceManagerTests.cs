@@ -188,7 +188,7 @@ namespace ReferenceManager.Tests
             Assert.Equal("4", addedReference.Volume);
         }
 
-        
+
         [Fact]
         public void Test_AddJournalArticleWithInvalidInputs()
         {
@@ -236,7 +236,7 @@ namespace ReferenceManager.Tests
             Assert.Equal("14--16", addedReference.Pages);
             Assert.Equal("January", addedReference.Month);
         }
-        
+
 
 
         [Fact]
@@ -285,7 +285,7 @@ namespace ReferenceManager.Tests
         }
 
 
-        
+
         [Fact]
         public void Test_AddJournalArticleWithKey()
         {
@@ -324,7 +324,7 @@ namespace ReferenceManager.Tests
             // Verify relevant output
             mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
         }
-        
+
         [Fact]
         public void HelpCommandListsAvailableCommands()
         {
@@ -390,7 +390,6 @@ namespace ReferenceManager.Tests
             mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Choose a command (type 'help' for available commands):"))), Times.Exactly(2));
 
         }
-
     }
 
 
