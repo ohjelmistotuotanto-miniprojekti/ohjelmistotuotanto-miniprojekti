@@ -183,6 +183,68 @@ namespace ReferenceManager.Tests
                 Console.WriteLine($"Found '{expected}': {found}");
             }
         }
+
+        [Fact]
+        public void EndToEnd_AddArticle_MultipleAuthors()
+        {
+            // Arrange
+            string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+            ReferenceManager.Program.FilePath = tempFilePath;
+
+            try
+            {
+                if (File.Exists(tempFilePath)) File.Delete(tempFilePath);
+
+                var consoleIO = new MockConsoleIO(new[] {
+                    "add",
+                    "1", // article
+                    "Adams, Bob", // First author
+                    "Doe, John", // Second author
+                    "", // finish authors
+                    "Test Title",
+                    "Test Journal",
+                    "2024",
+                    "", // month
+                    "", // volume
+                    "", // pages
+                    "", // doi
+                    "", // note
+                    "", // key
+                    "y", // confirm
+                    "exit"
+                });
+
+                var mockLoader = new Mock<IReferenceLoader>();
+                mockLoader.Setup(loader => loader.LoadReferences()).Returns(new List<Reference>());
+                var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+
+                // Act
+                program.Run();
+
+                // Assert
+                Assert.True(File.Exists(tempFilePath), "The BibTeX file was not created.");
+                string fileContent = File.ReadAllText(tempFilePath).Trim();
+
+                // Instead of checking the exact format, let's verify the key parts
+                Assert.Contains("@article{", fileContent);
+                Assert.Contains("author = {Adams, Bob, Doe, John}", fileContent);
+                Assert.Contains("title = {Test Title}", fileContent);
+                Assert.Contains("journal = {Test Journal}", fileContent);
+                Assert.Contains("year = {2024}", fileContent);
+
+                // Verify the output messages
+                var outputs = consoleIO.GetOutputs();
+                Assert.Contains("Journal article added successfully.", outputs);
+            }
+            finally
+            {
+                // Cleanup
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
     }
 }
 
