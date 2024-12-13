@@ -123,7 +123,6 @@ namespace ReferenceManager
             set
             {
                 _journal = value;
-                // Validation
             }
         }
 
@@ -148,7 +147,6 @@ namespace ReferenceManager
             get => _pages;
             set
             {
-                //_pages = value;
                 var input = value;
                 if (!String.IsNullOrEmpty(value))
                 {
@@ -161,6 +159,7 @@ namespace ReferenceManager
                     {
                         throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
                     }
+                    _pages = value;
                 }
                 else
                 {
@@ -224,7 +223,7 @@ namespace ReferenceManager
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException("You must input a book title.");
+                    throw new ArgumentException("You must input a book title.");
                 }
                 _bookTitle = value;
             }
@@ -244,9 +243,9 @@ namespace ReferenceManager
             }
         }
 
-        public string? Editor { get; set; }
-        public string? Number { get; set; }
-        public string? Series { get; set; }
+        public string? Editor { get; set; } = "";
+        public string? Number { get; set; } = "";
+        public string? Series { get; set; } = "";
 
         private string _pages = "";
         public string Pages
@@ -264,8 +263,9 @@ namespace ReferenceManager
                     }
                     if (!input.All(char.IsDigit))
                     {
-                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                        throw new ArgumentException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
                     }
+                    _pages = value;
                 }
                 else
                 {
@@ -273,10 +273,10 @@ namespace ReferenceManager
                 }
             }
         }
-        public string? Address { get; set; }
-        public string? Organization { get; set; }
-        public string? Publisher { get; set; }
-        public string? Note { get; set; }
+        public string? Address { get; set; } = "";
+        public string? Organization { get; set; } = "";
+        public string? Publisher { get; set; } = "";
+        public string? Note { get; set; } = "";
 
         public override string ToBibtex()
         {

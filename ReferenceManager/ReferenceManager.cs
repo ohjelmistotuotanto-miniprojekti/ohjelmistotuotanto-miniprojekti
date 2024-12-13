@@ -185,6 +185,11 @@ namespace ReferenceManager
             _io.Write("Key: ");
             string key = _io.Read().Trim();
 
+            if (!string.IsNullOrEmpty(key))
+            {
+                newArticleReference.ReferenceKey = key;
+            }
+
             _io.Write("Do you want to add this article (y/n)?");
             string confirmation = _io.Read().Trim().ToLower();
 
