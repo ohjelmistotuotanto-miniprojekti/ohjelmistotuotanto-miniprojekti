@@ -7,32 +7,220 @@ namespace ReferenceManager.Tests
 {
     public class ReferenceManagerTests
     {
-        /*
         [Fact]
-        public void Test_AddJournalArticleConfirms()
+        public void Test_AddInProceedingsConfirms()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Vihavainen, Arto") // Author
+                .Returns("")                // confirms
+                .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
+                .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")  // Editor
+                .Returns("")  // Volume
+                .Returns("")  // Series
+                .Returns("")  // Pages
+                .Returns("")  // Address
+                .Returns("")  // Month
+                .Returns("")  // Organization
+                .Returns("")  // Publisher
+                .Returns("")  // Note
+                .Returns("")  // key
+                .Returns("y");              // Confirmation
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as InProceedingsReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("Vihavainen, Arto", addedReference.Author);
+            Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
+            Assert.Equal("2011", addedReference.Year);
+            Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", addedReference.BookTitle);
+            Assert.Equal("", addedReference.Editor);
+            Assert.Equal("", addedReference.Volume);
+            Assert.Equal("", addedReference.Series);
+            Assert.Equal("", addedReference.Pages);
+            Assert.Equal("", addedReference.Address);
+            Assert.Equal("", addedReference.Month);
+            Assert.Equal("", addedReference.Organization);
+            Assert.Equal("", addedReference.Publisher);
+            Assert.Equal("", addedReference.Note);
+            Assert.Equal("Vihavainen2011E", addedReference.Key);
+            mockIO.Verify(io => io.Write("Adding an inproceedings article..."), Times.Once);
+        }
+
+
+        [Fact]
+        public void Test_UserCancelsJournalArticle()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
             // Simulated user input
             mockIO.SetupSequence(io => io.Read())
                 .Returns("John Doe")       // Author
+                .Returns("")                // confirms
                 .Returns("Sample Title")   // Title
                 .Returns("Tech Journal")   // Journal
                 .Returns("2024")           // Year
-                .Returns("")               // Month
-                .Returns("12")             // Volume
-                .Returns("34-56")          // Pages
+                .Returns("")
+                .Returns("")             // Volume
+                .Returns("")
+                .Returns("")          // Pages
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("n");             // Confirmation ('n' = user cancels)
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            Assert.NotNull(mockIO.Object);
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.AddJournalArticle(references);
+
+            // Assert
+            Assert.Empty(references); // Ensure no references are added
+            mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
+        }
+
+
+        [Fact]
+        public void Test_UserCancelsInProceedings()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Vihavainen, Arto") // Author
+                .Returns("")                // confirms
+                .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
+                .Returns("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education") // BookTitle
+                .Returns("2011")            // Year
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("")
+                .Returns("n");              // Confirmation ('n' = user cancels)
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            Assert.Empty(references); // Ensure no references are added
+            mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
+        }
+
+
+        [Fact]
+        public void Test_AddJournalInProceedingsUserDoesNotGiveNeededInformation()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+
+            // Simulated user input
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Virtanen Juho")  // Author
+                .Returns("")  // Confirm authors
+                .Returns("Extreme Apprenticeship")  // Title
+                .Returns("SIGCSE '11")  // Book Title
+                .Returns("2011")  // Year
+                .Returns("")  // Month (optional)
+                .Returns("")  // Editor (optional)
+                .Returns("4")  // Volume
+                .Returns("")  // Series (optional)
+                .Returns("")  // Pages (optional)
+                .Returns("")  // Address (optional)
+                .Returns("")  // Organization (optional)
+                .Returns("")  // Publisher (optional)
+                .Returns("")  // Note (optional)
+                .Returns("Key123")  // Key
+                .Returns("y");  // Confirmation
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as InProceedingsReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("Virtanen Juho", addedReference.Author);
+            Assert.Equal("Extreme Apprenticeship", addedReference.Title);
+            Assert.Equal("2011", addedReference.Year);
+            Assert.Equal("SIGCSE '11", addedReference.BookTitle);
+            Assert.Equal("4", addedReference.Volume);
+        }
+
+        
+        [Fact]
+        public void Test_AddJournalArticleWithInvalidInputs()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("")               // Invalid Author (empty)
+                .Returns("John Doe")       // Valid Author
+                .Returns("")               // Confirmation
+                .Returns("")               // Invalid Title (empty)
+                .Returns("Sample Title")   // Valid Title
+                .Returns("")               // Invalid Journal (empty)
+                .Returns("Tech Journal")   // Valid Journal
+                .Returns("")               // Invalid Year (empty)
+                .Returns("abcd")           // Invalid Year (non-numeric)
+                .Returns("2024")           // Valid Year
+                .Returns("January")        // Month
+                .Returns("A1")             // Volume (invalid)
+                .Returns("2")              // Volume (valid)
+                .Returns("page 1-2")       // Pages (invalid)
+                .Returns("14--16")         // Pages (valid)
                 .Returns("")               // Doi
                 .Returns("")               // Note
                 .Returns("")               // Key
                 .Returns("y");             // Confirmation
 
-
             mockIO.Setup(io => io.Write(It.IsAny<string>()));
 
-            var program = new Program(mockIO.Object);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddJournalArticle(references);
@@ -45,105 +233,42 @@ namespace ReferenceManager.Tests
             Assert.Equal("Sample Title", addedReference.Title);
             Assert.Equal("Tech Journal", addedReference.Journal);
             Assert.Equal("2024", addedReference.Year);
-            Assert.Equal("", addedReference.Month);
-            Assert.Equal("12", addedReference.Volume);
-            //Assert.Equal("34-56", addedReference.Pages);
-            Assert.Equal("", addedReference.Doi);
-            Assert.Equal("", addedReference.Note);
-            Assert.Equal("John2024S", addedReference.Key);
-
-            mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
-        }*/
-
-
-        [Fact]
-        public void Test_AddJournalArticle_SuccessfulAddition()
-        {
-            // Arrange
-            var mockIO = new Mock<ConsoleIO>();
-            var references = new List<Reference>();
-            var mockReference = new Mock<ArticleReference>();
-            mockReference.Setup(r => r.ToBibtexFile()).Returns(true);
-
-            mockIO.SetupSequence(io => io.Read())
-                .Returns("John Doe")       // Author
-                .Returns("")               // Confirm authors
-                .Returns("Sample Title")   // Title
-                .Returns("Tech Journal")   // Journal
-                .Returns("2024")           // Year
-                .Returns("")               // Month
-                .Returns("5")              // Volume 
-                .Returns("")               // Pages
-                .Returns("")               // Doi
-                .Returns("")               // Note
-                .Returns("")               // Key
-                .Returns("y");             // Confirmation
-
-            var program = new Program(mockIO.Object, new MockReferenceLoader(references));
-
-            // Act
-            program.AddJournalArticle(references, () => mockReference.Object);
-
-            // Assert
-            Assert.Single(references);
-            mockIO.Verify(io => io.Write("Journal article added successfully."), Times.Once);
+            Assert.Equal("14--16", addedReference.Pages);
+            Assert.Equal("January", addedReference.Month);
         }
+        
 
 
         [Fact]
-        public void Test_AddJournalArticle_UserCancels()
+        public void Test_AddInProceedingsWithKey()
         {
             // Arrange
             var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
-            var mockReference = new Mock<ArticleReference>();
-            mockReference.Setup(r => r.ToBibtexFile()).Returns(true);
 
             // Simulated user input
             mockIO.SetupSequence(io => io.Read())
-                .Returns("John Doe")       // Author
-                .Returns("")               // Confirm authors
-                .Returns("Sample Title")   // Title
-                .Returns("Tech Journal")   // Journal
-                .Returns("2024")           // Year
-                .Returns("n");             // User cancels
-
-
-            var program = new Program(mockIO.Object, new MockReferenceLoader(references));
-
-            // Act
-            program.AddJournalArticle(references, () => mockReference.Object);
-
-            // Assert
-            // Ensure no references were added
-            Assert.Empty(references);
-
-            // Verify that the cancellation message is written
-            mockIO.Verify(io => io.Write("Operation cancelled by the user."), Times.Once);
-
-            // Verify `ToBibtexFile` is not called since the user cancelled
-            mockArticleReference.Verify(ar => ar.ToBibtexFile(), Times.Never);
-        }
-
-
-        [Fact]
-        public void Test_AddInProceedingsConfirms()
-        {
-            // Arrange
-            var mockIO = new Mock<ConsoleIO>();
-            var references = new List<Reference>();
-            var mockLoader = new ReferenceManager.Tests.MockReferenceLoader(references); // Instantiate MockReferenceLoader with references
-
-            // Simulated user input
-            mockIO.SetupSequence(io => io.Read())
-                .Returns("Vihavainen, Arto") // Author
+                .Returns("Virtanen Juho")  // Author
                 .Returns("")                // Confirm authors
-                .Returns("Extreme Apprenticeship Method in Teaching Programming for Beginners.") // Title
-                .Returns("SIGCSE '11")      // Book Title
-                .Returns("2011")            // Year
-                .Returns("y");              // Confirmation
+                .Returns("Extreme Apprenticeship")  // Title
+                .Returns("SIGCSE '11")  // Book Title
+                .Returns("2011")  // Year
+                .Returns("")  // Month (optional)
+                .Returns("")  // Editor (optional)
+                .Returns("4")  // Volume
+                .Returns("")  // Series (optional)
+                .Returns("")  // Pages (optional)
+                .Returns("")  // Address (optional)
+                .Returns("")  // Organization (optional)
+                .Returns("")  // Publisher (optional)
+                .Returns("")  // Note (optional)
+                .Returns("Key123")  // Key
+                .Returns("y");  // Confirmation
 
-            var program = new Program(mockIO.Object, mockLoader); // Pass MockReferenceLoader
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
             // Act
             program.AddInProceedings(references);
@@ -152,260 +277,114 @@ namespace ReferenceManager.Tests
             Assert.Single(references); // Ensure one reference is added
             var addedReference = references[0] as InProceedingsReference;
             Assert.NotNull(addedReference);
-            Assert.Equal("Vihavainen, Arto", addedReference.Author);
-            Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", addedReference.Title);
+            Assert.Equal("Virtanen Juho", addedReference.Author);
+            Assert.Equal("Extreme Apprenticeship", addedReference.Title);
             Assert.Equal("2011", addedReference.Year);
             Assert.Equal("SIGCSE '11", addedReference.BookTitle);
+            Assert.Equal("4", addedReference.Volume);
         }
 
 
+        
         [Fact]
-        public void Test_UserCancelsInProceedings()
+        public void Test_AddJournalArticleWithKey()
         {
             // Arrange
-            var mockIO = new MockConsoleIO(new[] // Use MockConsoleIO for simulated input/output
-            {
-                "Vihavainen, Arto", // Author
-                "",                 // Confirm authors
-                "Extreme Apprenticeship Method in Teaching Programming for Beginners.", // Title
-                "SIGCSE '11",       // Book Title
-                "2011",             // Year
-                "n"                 // Confirmation ('n' = user cancels)
-            });
-
-            var mockLoader = new MockReferenceLoader(new List<Reference>()); // Use MockReferenceLoader with no references
-            var program = new Program(mockIO, mockLoader); // Pass mockLoader
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
             var references = new List<Reference>();
 
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("John Doe")       // Author
+                .Returns("")               // Confirmation
+                .Returns("Sample Title")   // Title
+                .Returns("Tech Journal")   // Journal
+                .Returns("2024")           // Year
+                .Returns("")               // Month
+                .Returns("")               // Volume
+                .Returns("")               // Pages
+                .Returns("")               // Doi
+                .Returns("")               // Note
+                .Returns("customKey")      // Key
+                .Returns("y");             // Confirmation
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()));
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
             // Act
-            program.AddInProceedings(references);
+            program.AddJournalArticle(references);
 
             // Assert
-            Assert.Empty(references); // Ensure no references are added
-            Assert.Contains("Operation cancelled by the user.", mockIO.GetOutputs()); // Verify cancellation message
+            Assert.Single(references); // Ensure one reference is added
+            var addedReference = references[0] as ArticleReference;
+            Assert.NotNull(addedReference);
+            Assert.Equal("customKey", addedReference.Key);
+
+            // Verify relevant output
+            mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
+        }
+        
+        [Fact]
+        public void HelpCommandListsAvailableCommands()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("help")
+                .Returns("exit");
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.Run();
+
+            // Assert
+            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Available commands: add, list, help, exit"))), Times.Once);
+            mockIO.Verify(io => io.Write("Exiting the application. Goodbye!"), Times.Once);
         }
 
+        [Fact]
+        public void UnkownCommandPrintsCorrectOutput()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("unknown")
+                .Returns("exit");
 
-        /*
-                [Fact]
-                public void Test_AddJournalInProceedingsUserDoesNotGiveNeededInformation()
-                {
-                    // Arrange
-                    var mockIO = new Mock<ConsoleIO>();
-                    var references = new List<Reference>();
-                    var mockLoader = new Mock<IReferenceLoader>(); // Add mockLoader
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
-                    // Simulated user input
-                    mockIO.SetupSequence(io => io.Read())
-                        .Returns("Virtanen Juho")  // Author
-                        .Returns("")  // Confirm authors
-                        .Returns("Extreme Apprenticeship")  // Title
-                        .Returns("SIGCSE '11")  // Book Title
-                        .Returns("2011")  // Year
-                        .Returns("")  // Month (optional)
-                        .Returns("")  // Editor (optional)
-                        .Returns("4")  // Volume
-                        .Returns("")  // Series (optional)
-                        .Returns("")  // Pages (optional)
-                        .Returns("")  // Address (optional)
-                        .Returns("")  // Organization (optional)
-                        .Returns("")  // Publisher (optional)
-                        .Returns("")  // Note (optional)
-                        .Returns("Key123")  // Key
-                        .Returns("y");  // Confirmation
+            // Act
+            program.Run();
 
-                    mockIO.Setup(io => io.Write(It.IsAny<string>()));
+            // Assert
+            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Unknown command. Type 'help' to see available commands."))), Times.Once);
+        }
 
-                    var program = new Program(mockIO.Object, mockLoader.Object); // Pass mockLoader
+        [Fact]
+        public void InvalidCommandAtReferenceSelectionReturnsToMainMenu()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("add")
+                .Returns("invalidcommand")
+                .Returns("exit");
 
-                    // Act
-                    program.AddInProceedings(references);
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
 
-                    // Assert
-                    Assert.Single(references); // Ensure one reference is added
-                    var addedReference = references[0] as InProceedingsReference;
-                    Assert.NotNull(addedReference);
-                    Assert.Equal("Virtanen Juho", addedReference.Author);
-                    Assert.Equal("Extreme Apprenticeship", addedReference.Title);
-                    Assert.Equal("2011", addedReference.Year);
-                    Assert.Equal("SIGCSE '11", addedReference.BookTitle);
-                    Assert.Equal("4", addedReference.Volume);
-                }
+            // Act
+            program.Run();
 
+            // Assert
+            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Invalid choice. Returning to main menu."))), Times.Once);
+            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Choose a command (type 'help' for available commands):"))), Times.Exactly(2));
 
-                /*
-                [Fact]
-                public void Test_AddJournalArticleWithInvalidInputs()
-                {
-                    // Arrange
-                    var mockIO = new Mock<ConsoleIO>();
-                    var references = new List<Reference>();
-
-                    mockIO.SetupSequence(io => io.Read())
-                        .Returns("")               // Invalid Author (empty)
-                        .Returns("John Doe")       // Valid Author
-                        .Returns("")               // Confirmation
-                        .Returns("")               // Invalid Title (empty)
-                        .Returns("Sample Title")   // Valid Title
-                        .Returns("")               // Invalid Journal (empty)
-                        .Returns("Tech Journal")   // Valid Journal
-                        .Returns("")               // Invalid Year (empty)
-                        .Returns("abcd")           // Invalid Year (non-numeric)
-                        .Returns("2024")           // Valid Year
-                        .Returns("y");             // Confirmation
-
-                    mockIO.Setup(io => io.Write(It.IsAny<string>()));
-
-                    var program = new Program(mockIO.Object);
-
-                    // Act
-                    program.AddJournalArticle(references);
-
-                    // Assert
-                    Assert.Single(references); // Ensure one reference is added
-                    var addedReference = references[0] as ArticleReference;
-                    Assert.NotNull(addedReference);
-                    Assert.Equal("John Doe", addedReference.Author);
-                    Assert.Equal("Sample Title", addedReference.Title);
-                    Assert.Equal("Tech Journal", addedReference.Journal);
-                    Assert.Equal("2024", addedReference.Year);
-                }
-                */
-
-        /*
-                [Fact]
-                public void Test_AddInProceedingsWithKey()
-                {
-                    // Arrange
-                    var mockIO = new Mock<ConsoleIO>();
-                    var mockLoader = new Mock<IReferenceLoader>(); // Declare mockLoader
-                    var references = new List<Reference>();
-
-                    // Simulated user input
-                    mockIO.SetupSequence(io => io.Read())
-                        .Returns("Virtanen Juho")  // Author
-                        .Returns("")               // Confirm authors
-                        .Returns("Extreme Apprenticeship")  // Title
-                        .Returns("SIGCSE '11")     // Book Title
-                        .Returns("2011")           // Year
-                        .Returns("")               // Month (optional)
-                        .Returns("")               // Editor (optional)
-                        .Returns("4")              // Volume
-                        .Returns("")               // Series (optional)
-                        .Returns("")               // Pages (optional)
-                        .Returns("")               // Address (optional)
-                        .Returns("")               // Organization (optional)
-                        .Returns("")               // Publisher (optional)
-                        .Returns("")               // Note (optional)
-                        .Returns("Key123")         // Key
-                        .Returns("y");             // Confirmation
-
-                    mockIO.Setup(io => io.Write(It.IsAny<string>()));
-
-                    var program = new Program(mockIO.Object, mockLoader.Object); // Pass mockLoader
-
-                    // Act
-                    program.AddInProceedings(references);
-
-                    // Assert
-                    Assert.Single(references); // Ensure one reference is added
-                    var addedReference = references[0] as InProceedingsReference;
-                    Assert.NotNull(addedReference);
-                    Assert.Equal("Virtanen Juho", addedReference.Author);
-                    Assert.Equal("Extreme Apprenticeship", addedReference.Title);
-                    Assert.Equal("2011", addedReference.Year);
-                    Assert.Equal("SIGCSE '11", addedReference.BookTitle);
-                    Assert.Equal("4", addedReference.Volume);
-                }
-
-                [Fact]
-                public void FilterReferences_NoReferences_ShouldOutputMessage()
-                {
-                    // Arrange
-                    var mockLoader = new Mock<IReferenceLoader>();
-                    mockLoader.Setup(loader => loader.LoadReferences()).Returns(new List<Reference>());
-
-                    var mockIO = new Mock<ConsoleIO>();
-                    mockIO.Setup(io => io.Read()).Returns(""); // Simulate no criteria entered
-                    var program = new Program(mockIO.Object, mockLoader.Object);
-
-                    // Act
-                    using (var consoleOutput = new StringWriter())
-                    {
-                        Console.SetOut(consoleOutput);
-
-                        program.FilterReferences();
-
-                        // Assert
-                        var output = consoleOutput.ToString();
-                        Assert.Contains("No references found in the file.", output);
-                    }
-                }
-
-                [Fact]
-                public void Test_FilterReferences_NoReferences()
-                {
-                    // Arrange
-                    var mockIO = new MockConsoleIO(new[] { "" }); // Simulate no criteria entered
-                    var mockLoader = new MockReferenceLoader(new List<Reference>()); // No references
-
-                    var program = new Program(mockIO, mockLoader);
-
-                    // Act
-                    program.FilterReferences();
-
-                    // Assert
-                    Assert.Contains("No references found in the file.", mockIO.GetOutputs());
-                }
-
-                /*
-                [Fact]
-                public void Test_AddJournalArticleWithKey()
-                {
-                    // Arrange
-                    var mockIO = new Mock<ConsoleIO>();
-                    var references = new List<Reference>();
-
-                    mockIO.SetupSequence(io => io.Read())
-                        .Returns("John Doe")       // Author
-                        .Returns("")                // confirms
-                        .Returns("Sample Title")   // Title
-                        .Returns("Tech Journal")   // Journal
-                        .Returns("2024")           // Year
-                        .Returns("2")              // Month
-                        .Returns("14")             // Volume
-                        .Returns("3-5")            // Pages
-                        .Returns("doi")            // DOI
-                        .Returns("muistiinpano")   // Note
-                        .Returns("key")            // Key
-                        .Returns("y");             // Confirmation
-
-                    mockIO.Setup(io => io.Write(It.IsAny<string>()));
-
-                    var program = new Program(mockIO.Object);
-
-                    // Act
-                    program.AddJournalArticle(references);
-
-                    // Assert
-                    Assert.Single(references); // Ensure one reference is added
-                    var addedReference = references[0] as ArticleReference;
-                    Assert.NotNull(addedReference);
-                    Assert.Equal("John Doe", addedReference.Author);
-                    Assert.Equal("Sample Title", addedReference.Title);
-                    Assert.Equal("Tech Journal", addedReference.Journal);
-                    Assert.Equal("2024", addedReference.Year);
-                    Assert.Equal("key", addedReference.Key);
-                    Assert.Equal("14", addedReference.Volume);
-                    Assert.Equal("3-5", addedReference.Pages);
-                    Assert.Equal("doi", addedReference.Doi);
-                    Assert.Equal("muistiinpano", addedReference.Note);
-                    Assert.Equal("2", addedReference.Month);
-
-                    // Verify relevant output
-                    mockIO.Verify(io => io.Write("Adding journal article..."), Times.Once);
-                }
-                */
+        }
 
     }
 
@@ -437,29 +416,6 @@ namespace ReferenceManager.Tests
         public IEnumerable<string> GetOutputs()
         {
             return _outputs;
-        }
-    }
-
-    public class MockReferenceLoader : IReferenceLoader
-    {
-        private readonly List<Reference> _references;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MockReferenceLoader"/> class with the provided references.
-        /// </summary>
-        /// <param name="references">The references to simulate as loaded by the loader.</param>
-        public MockReferenceLoader(IEnumerable<Reference> references)
-        {
-            _references = new List<Reference>(references);
-        }
-
-        /// <summary>
-        /// Simulates loading references.
-        /// </summary>
-        /// <returns>The list of mock references.</returns>
-        public List<Reference> LoadReferences()
-        {
-            return _references;
         }
     }
 }
