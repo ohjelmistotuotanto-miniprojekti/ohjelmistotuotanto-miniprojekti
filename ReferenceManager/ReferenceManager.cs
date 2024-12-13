@@ -544,7 +544,6 @@ namespace ReferenceManager
                 return;
             }
 
-            bool unknownCriteria = true;
 
             // Ask the user to select filter criteria
             Console.WriteLine("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");

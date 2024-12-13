@@ -1,6 +1,6 @@
-/*
 using Xunit;
 using System.IO;
+using Moq;
 using System;
 using ReferenceManager;
 
@@ -14,7 +14,6 @@ namespace ReferenceManager.Tests
         [Fact]
         public void EndToEnd_AddInProceedingsReference()
         {
-
             string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
             ReferenceManager.Program.FilePath = tempFilePath;
             Console.WriteLine($"Writing to file: {Program.FilePath}");
@@ -48,7 +47,11 @@ namespace ReferenceManager.Tests
                     "exit"  // Exit
                 });
 
-                var program = new ReferenceManager.Program(consoleIO);
+                // Mock IReferenceLoader
+                var mockLoader = new Mock<IReferenceLoader>();
+                mockLoader.Setup(loader => loader.LoadReferences()).Returns(new List<Reference>());
+
+                var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
 
                 // Act
                 program.Run();
@@ -76,6 +79,75 @@ namespace ReferenceManager.Tests
                 }
             }
         }
+
+
+        [Fact]
+        public void EndToEnd_AddJournalArticle()
+        {
+            string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+            ReferenceManager.Program.FilePath = tempFilePath;
+            Console.WriteLine($"Writing to file: {Program.FilePath}");
+
+            try
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+
+                var consoleIO = new MockConsoleIO(new[]
+                {
+                    "add", // Add command
+                    "1",   // Journal Article type
+                    "John Doe",       // Author
+                    "",               // Confirm authors
+                    "Sample Title",   // Title
+                    "Tech Journal",   // Journal
+                    "2024",           // Year
+                    "",                // Month
+                    "",                 // Volume
+                    "",              // Pages
+                    "",                // DOI
+                    "",              // Note
+                    "",              // Key
+                    "y",              // Confirm addition
+                    "list",           // List command
+                    "exit"            // Exit
+                });
+
+                // Mock IReferenceLoader
+                var mockLoader = new Mock<IReferenceLoader>();
+                mockLoader.Setup(loader => loader.LoadReferences()).Returns(new List<Reference>());
+
+                var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+
+                // Act
+                program.Run();
+
+                // Assert: Verify file content
+                Assert.True(File.Exists(tempFilePath), "The BibTeX file was not created.");
+
+                string fileContent = File.ReadAllText(tempFilePath).Trim();
+                string expectedBibtex =
+                    $"@article{{John2024S,\n" +
+                    $"  author = {{John Doe}},\n" +
+                    $"  title = {{Sample Title}},\n" +
+                    $"  journal = {{Tech Journal}},\n" +
+                    $"  year = {{2024}},\n" +  // Note the trailing comma here
+                    $"}}";
+
+
+                Assert.Equal(expectedBibtex, fileContent);
+            }
+            finally
+            {
+                // Ensure file cleanup
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+
     }
 }
-*/
+
