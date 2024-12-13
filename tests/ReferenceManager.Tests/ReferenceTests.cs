@@ -476,7 +476,7 @@ public class UnitTest2
             $"  year = {{1991}},\n" +
             $"  volume = {{6}},\n" +
             $"  pages = {{38--46}}\n" +
-            $"}}\n\r\n",
+            $"}}\n\n",
             File.ReadAllText(ReferenceManager.Program.FilePath)
         );
         Assert.True(
