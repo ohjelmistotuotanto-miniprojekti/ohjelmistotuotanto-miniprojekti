@@ -54,7 +54,9 @@ namespace ReferenceManager
                         ListReferences(references);
                         break;
                     case "filter":
-                        FilterReferences();
+                        // Load references from the file
+                        references = LoadReferencesFromFile();
+                        FilterReferences(references);
                         break;
                     case "help":
                         ShowHelp();
@@ -451,7 +453,7 @@ namespace ReferenceManager
 
             if (!File.Exists(Program.FilePath))
             {
-                Console.WriteLine("References file not found.");
+                _io.Write("References file not found.");
                 return references;
             }
 
@@ -518,7 +520,7 @@ namespace ReferenceManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading references from file: {ex.Message}");
+                _io.Write($"Error reading references from file: {ex.Message}");
             }
 
             return references;
@@ -533,28 +535,24 @@ namespace ReferenceManager
         /// Supported filter criteria are "author", "journal", "year", and "title".
         /// The filter is case-insensitive.
         /// </remarks>
-        public void FilterReferences()
+        public void FilterReferences(List<Reference> references)
         {
-            // Load references from the file
-            List<Reference> references = LoadReferencesFromFile();
 
             if (references.Count == 0)
             {
-                Console.WriteLine("No references found in the file.");
+                _io.Write("No references found in the file.");
                 return;
             }
 
-            bool unknownCriteria = true;
-
             // Ask the user to select filter criteria
-            Console.WriteLine("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");
-            Console.WriteLine("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)");
-            Console.WriteLine("Available criteria: author, journal, year, title");
-            string? selectedCriteria = Console.ReadLine()?.Trim().ToLower();
+            _io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");
+            _io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)");
+            _io.Write("Available criteria: author, journal, year, title");
+            string? selectedCriteria =_io.Read()?.Trim().ToLower();
 
             if (string.IsNullOrEmpty(selectedCriteria))
             {
-                Console.WriteLine("No criteria selected. Displaying all references.");
+                _io.Write("No criteria selected. Displaying all references.");
                 ListReferences(references);
                 return;
             }
@@ -574,23 +572,23 @@ namespace ReferenceManager
                 switch (criterion)
                 {
                     case "author":
-                        Console.WriteLine("Enter author (or leave blank to skip): ");
-                        authorFilter = Console.ReadLine()?.Trim();
+                        _io.Write("Enter author (or leave blank to skip): ");
+                        authorFilter = _io.Read()?.Trim();
                         break;
                     case "journal":
-                        Console.WriteLine("Enter journal (or leave blank to skip): ");
-                        journalFilter = Console.ReadLine()?.Trim();
+                        _io.Write("Enter journal (or leave blank to skip): ");
+                        journalFilter = _io.Read()?.Trim();
                         break;
                     case "year":
-                        Console.WriteLine("Enter year (or leave blank to skip): ");
-                        yearFilter = Console.ReadLine()?.Trim();
+                        _io.Write("Enter year (or leave blank to skip): ");
+                        yearFilter = _io.Read()?.Trim();
                         break;
                     case "title":
-                        Console.WriteLine("Enter title (or leave blank to skip): ");
-                        titleFilter = Console.ReadLine()?.Trim();
+                        _io.Write("Enter title (or leave blank to skip): ");
+                        titleFilter = _io.Read()?.Trim();
                         break;
                     default:
-                        Console.WriteLine($"Unknown criterion: {criterion}");
+                        _io.Write($"Unknown criterion: {criterion}");
                         break;
                 }
             }
@@ -636,14 +634,14 @@ namespace ReferenceManager
             // Display results
             if (filteredReferences.Count == 0)
             {
-                Console.WriteLine("No references match the given criteria.");
+                _io.Write("No references match the given criteria.");
             }
             else
             {
-                Console.WriteLine($"Filtered references (matching criteria):");
+                _io.Write($"Filtered references (matching criteria):");
                 foreach (var reference in filteredReferences)
                 {
-                    Console.WriteLine(reference.ToBibtex());
+                    _io.Write(reference.ToBibtex());
                 }
             }
         }
