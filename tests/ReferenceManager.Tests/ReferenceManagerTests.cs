@@ -341,7 +341,12 @@ namespace ReferenceManager.Tests
             program.Run();
 
             // Assert
-            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Available commands: add, list, help, exit"))), Times.Once);
+            mockIO.Verify(io => io.Write("Available commands:"), Times.Once);
+            mockIO.Verify(io => io.Write("  add - Add a new reference"), Times.Once);
+            mockIO.Verify(io => io.Write("  list - List all references"), Times.Once);
+            mockIO.Verify(io => io.Write("  filter - Filter references by author, journal, year, or title"), Times.Once);
+            mockIO.Verify(io => io.Write("  help - Show available commands"), Times.Once);
+            mockIO.Verify(io => io.Write("  exit - Exit the application"), Times.Once);
             mockIO.Verify(io => io.Write("Exiting the application. Goodbye!"), Times.Once);
         }
 
