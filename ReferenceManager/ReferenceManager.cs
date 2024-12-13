@@ -548,7 +548,7 @@ namespace ReferenceManager
             _io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):");
             _io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)");
             _io.Write("Available criteria: author, journal, year, title");
-            string? selectedCriteria =_io.Read()?.Trim().ToLower();
+            string? selectedCriteria = _io.Read()?.Trim().ToLower();
 
             if (string.IsNullOrEmpty(selectedCriteria))
             {
