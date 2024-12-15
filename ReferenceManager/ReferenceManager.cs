@@ -733,6 +733,7 @@ namespace ReferenceManager
             _io.Write("  filter - Filter references by author, journal, year, or title");
             _io.Write("  help - Show available commands");
             _io.Write("  exit - Exit the application");
+            _io.Write("  print references - Lists references in human readable format");
         }
     }
 
