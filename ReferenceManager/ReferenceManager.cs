@@ -53,6 +53,9 @@ namespace ReferenceManager
                     case "list":
                         ListReferences(references);
                         break;
+                    case "print references":
+                        PrintReferences(references);
+                        break;
                     case "filter":
                         // Load references from the file
                         references = LoadReferencesFromFile();
@@ -446,6 +449,43 @@ namespace ReferenceManager
             }
         }
 
+        public void PrintReferences(List<Reference> references)
+        {
+            _io.Write("Listing all references:");
+
+            // Read references from file
+            if (File.Exists(FilePath))
+            {
+                _io.Write("\nReferences from file:");
+                using (var reader = new StreamReader(FilePath))
+                {
+                    string? line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        //string trimmedLine;
+                        if (line.StartsWith("@"))
+                        {
+                            continue;
+                        } else
+                        {
+                            for (int i = 0; i < line.Length; i++)
+                            {
+                                if (line[i] == '{')
+                                {
+                                    _io.Write(line.Substring(i + 1));
+                                }
+                            }
+                        }
+
+                        //_io.Write(line);
+                    }
+                }
+            }
+            else
+            {
+                _io.Write("\nNo file found. Add references to create the file.");
+            }
+        }
 
         public List<Reference> LoadReferencesFromFile()
         {
