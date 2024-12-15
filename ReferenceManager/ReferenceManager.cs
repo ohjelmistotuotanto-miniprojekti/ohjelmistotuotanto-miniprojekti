@@ -453,45 +453,59 @@ namespace ReferenceManager
         {
             _io.Write("Listing all references:");
 
-            // Read references from file
+            // Check if the file exists
             if (File.Exists(FilePath))
             {
                 _io.Write("\nReferences from file:");
                 using (var reader = new StreamReader(FilePath))
                 {
                     string? line;
+                    string referenceLine = ""; // To build the entire reference line
                     while ((line = reader.ReadLine()) != null)
                     {
-                        string trimmedLine;
-                        if (line.StartsWith("@") || line == "" || line == "}")
+                        if (string.IsNullOrWhiteSpace(line) || line == "}")
                         {
-                            if (line.StartsWith("@"))
+                            if (!string.IsNullOrEmpty(referenceLine))
                             {
-                                _io.Write("");
-                            } else
-                            {
-                                continue;
+                                _io.Write(referenceLine.TrimEnd(',', '.') + "."); // Print the completed reference
+                                referenceLine = ""; // Reset for the next reference
                             }
                             continue;
-                        } else
-                        {
-                            string endingOfLine = ".";
-                            if (line[2] == 'j' || line[2] == 'p')
-                            {
-                                endingOfLine = ",";
-                            }
-                            for (int i = 0; i < line.Length; i++)
-                            {
-                                
-                                if (line[i] == '{')
-                                {
-                                    trimmedLine = line.Substring(i + 1).Split('}')[0] + endingOfLine;
-                                    _io.Write(trimmedLine);
-                                }
-                            }
                         }
 
-                        //_io.Write(line);
+                        if (line.StartsWith("@"))
+                        {
+                            // Start a new reference
+                            if (!string.IsNullOrEmpty(referenceLine))
+                            {
+                                _io.Write(referenceLine.TrimEnd(',', '.') + "."); // Print the previous reference
+                                referenceLine = "";
+                            }
+                            continue;
+                        }
+
+                        string endingOfLine = ".";
+                        if (line[2] == 'j' || line[2] == 'p') // Check for journal or pages
+                        {
+                            endingOfLine = ",";
+                        }
+
+                        // Extract content between curly braces
+                        for (int i = 0; i < line.Length; i++)
+                        {
+                            if (line[i] == '{')
+                            {
+                                string content = line.Substring(i + 1).Split('}')[0];
+                                referenceLine += content + endingOfLine + " ";
+                                break;
+                            }
+                        }
+                    }
+
+                    // Print the last reference if it exists
+                    if (!string.IsNullOrEmpty(referenceLine))
+                    {
+                        _io.Write(referenceLine.TrimEnd(',', '.') + ".");
                     }
                 }
             }
@@ -500,6 +514,7 @@ namespace ReferenceManager
                 _io.Write("\nNo file found. Add references to create the file.");
             }
         }
+
 
         public List<Reference> LoadReferencesFromFile()
         {
