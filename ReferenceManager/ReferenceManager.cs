@@ -449,6 +449,12 @@ namespace ReferenceManager
             }
         }
 
+        /// <summary>
+        /// Lists all references in human readable form, like Latex
+        /// </summary>
+        /// <summary>
+        /// Lists all references
+        /// </summary>
         public void PrintReferences(List<Reference> references)
         {
             _io.Write("Listing all references:");
@@ -467,7 +473,7 @@ namespace ReferenceManager
                         {
                             if (!string.IsNullOrEmpty(referenceLine))
                             {
-                                _io.Write(referenceLine.TrimEnd(',', '.') + "."); // Print the completed reference
+                                _io.Write(referenceLine.TrimEnd(',', '.') ); // Print the completed reference
                                 referenceLine = ""; // Reset for the next reference
                             }
                             continue;
@@ -490,7 +496,7 @@ namespace ReferenceManager
                             endingOfLine = ",";
                         }
 
-                        // Extract content between curly braces
+              
                         for (int i = 0; i < line.Length; i++)
                         {
                             if (line[i] == '{')
@@ -505,7 +511,7 @@ namespace ReferenceManager
                     // Print the last reference if it exists
                     if (!string.IsNullOrEmpty(referenceLine))
                     {
-                        _io.Write(referenceLine.TrimEnd(',', '.') + ".");
+                        _io.Write(referenceLine.TrimEnd(',', '.'));
                     }
                 }
             }
