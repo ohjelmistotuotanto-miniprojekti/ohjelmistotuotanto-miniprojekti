@@ -462,17 +462,31 @@ namespace ReferenceManager
                     string? line;
                     while ((line = reader.ReadLine()) != null)
                     {
-                        //string trimmedLine;
-                        if (line.StartsWith("@"))
+                        string trimmedLine;
+                        if (line.StartsWith("@") || line == "" || line == "}")
                         {
+                            if (line.StartsWith("@"))
+                            {
+                                _io.Write("");
+                            } else
+                            {
+                                continue;
+                            }
                             continue;
                         } else
                         {
+                            string endingOfLine = ".";
+                            if (line[2] == 'j' || line[2] == 'p')
+                            {
+                                endingOfLine = ",";
+                            }
                             for (int i = 0; i < line.Length; i++)
                             {
+                                
                                 if (line[i] == '{')
                                 {
-                                    _io.Write(line.Substring(i + 1));
+                                    trimmedLine = line.Substring(i + 1).Split('}')[0] + endingOfLine;
+                                    _io.Write(trimmedLine);
                                 }
                             }
                         }
