@@ -501,7 +501,67 @@ namespace ReferenceManager.Tests
                 s.Contains("year = {2022}"))),
                 Times.Once);
         }
-    }
+
+
+
+
+        [Fact]
+        public void TestPrintReferences()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+
+            // Arrange
+            string tempFilePath = Path.GetTempFileName();
+
+            // Set up the mock to capture output
+            var outputCapture = new StringWriter();
+            mockIO.Setup(io => io.Write(It.IsAny<string>())).Callback<string>(s => outputCapture.Write(s));
+
+            // Create a reference to test
+            var referenceContent = "@article{Kalle1999T,\n" +
+                                   "author = {Kalle, Eetu},\n" +
+                                   "title = {Taiteiden perusteet},\n" +
+                                   "journal = {Kallen tarinat},\n" +
+                                   "year = {1999},\n" +
+                                   "volume = {3},\n" +
+                                   "pages = {37--59}\n" +
+                                   "}";
+
+            // Simulate writing the reference to the file
+            File.WriteAllText(tempFilePath, referenceContent);
+
+            try
+            {
+                // Set file path for the ReferenceManager
+                Program.FilePath = tempFilePath;  
+
+                // Create the Program instance and call PrintReferences
+                var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+                program.PrintReferences(references);  
+
+                // Act
+                string actualOutput = outputCapture.ToString().Trim();
+
+                // Assert
+                string expectedOutput =
+                    "Listing all references:\n" +
+                    "References from file:" +
+                    "Kalle, Eetu. Taiteiden perusteet. Kallen tarinat. 1999. 3. 37--59.";
+
+                Assert.Equal(expectedOutput, actualOutput);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+            }
+        }
+
+}
 
     /// <summary>
     /// Mock implementation of ConsoleIO for testing.
