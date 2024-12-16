@@ -246,49 +246,229 @@ namespace ReferenceManager.Tests
         }
 
 [Fact]
-public void GetAuthors_SingleAuthor_ReturnsCorrectly()
+public void EndToEnd_FilterReferences_SingleAuthor()
 {
-    var mockIO = new Mock<ConsoleIO>();
-    mockIO.SetupSequence(io => io.Read())
-        .Returns("John Doe")    // First author
-        .Returns("");           // Empty to finish
+    string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+    ReferenceManager.Program.FilePath = tempFilePath;
 
-    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
-    var result = program.GetAuthors();
+    try
+    {
+        File.WriteAllText(tempFilePath,
+            "@article{Smith2020T,\n" +
+            "  author = {Smith, John},\n" +
+            "  title = {Test Paper},\n" +
+            "  journal = {Science Journal},\n" +
+            "  year = {2020}\n" +
+            "}\n\n" +
+            "@article{Jones2020A,\n" +
+            "  author = {Jones, Bob},\n" +
+            "  title = {Another Paper},\n" +
+            "  journal = {Nature},\n" +
+            "  year = {2020}\n" +
+            "}");
 
-    Assert.Equal("John Doe", result);
+        var consoleIO = new MockConsoleIO(new[] {
+            "filter",
+            "author",
+            "Smith",
+            "exit"
+        });
+
+        var mockLoader = new Mock<IReferenceLoader>();
+        var references = new List<Reference> { 
+            new ArticleReference { 
+                Author = "Smith, John",
+                Title = "Test Paper",
+                Journal = "Science Journal",
+                Year = "2020"
+            },
+            new ArticleReference {
+                Author = "Jones, Bob",
+                Title = "Another Paper", 
+                Journal = "Nature",
+                Year = "2020"
+            }
+        };
+        mockLoader.Setup(loader => loader.LoadReferences()).Returns(references);
+
+        var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+        program.Run();
+
+        var outputs = consoleIO.GetOutputs();
+        
+        bool foundSmithPaper = outputs.Any(o => 
+            o.Contains("Smith") && 
+            o.Contains("Test Paper") && 
+            o.Contains("Science Journal"));
+            
+        Assert.True(foundSmithPaper, "Smith's paper should be in the filtered results");
+        
+        bool containsJonesPaper = outputs.Any(o => 
+            o.Contains("Jones") && 
+            o.Contains("Another Paper") && 
+            o.Contains("Nature"));
+            
+        Assert.False(containsJonesPaper, "Jones's paper should not be in the filtered results");
+    }
+    finally
+    {
+        if (File.Exists(tempFilePath))
+        {
+            File.Delete(tempFilePath);
+        }
+    }
 }
 
 [Fact]
-public void GetAuthors_MultipleAuthors_ReturnsSortedList()
+public void EndToEnd_FilterReferences_MultipleAuthors()
 {
-    var mockIO = new Mock<ConsoleIO>();
-    mockIO.SetupSequence(io => io.Read())
-        .Returns("Charles Darwin")
-        .Returns("Alan Turing")
-        .Returns("Bob Smith")
-        .Returns("");
+    string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+    ReferenceManager.Program.FilePath = tempFilePath;
 
-    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
-    var result = program.GetAuthors();
+    try
+    {
+        File.WriteAllText(tempFilePath,
+            "@article{Smith2020T,\n" +
+            "  author = {Smith, John, Johnson, Mike},\n" +
+            "  title = {Test Paper},\n" +
+            "  journal = {Science Journal},\n" +
+            "  year = {2020}\n" +
+            "}");
 
-    Assert.Equal("Alan Turing, Bob Smith, Charles Darwin", result);
+        var consoleIO = new MockConsoleIO(new[] {
+            "filter",
+            "author",
+            "Johnson",  // Should find paper with multiple authors
+            "exit"
+        });
+
+        var mockLoader = new Mock<IReferenceLoader>();
+        var references = new List<Reference> { 
+            new ArticleReference { 
+                Author = "Smith, John, Johnson, Mike",
+                Title = "Test Paper",
+                Journal = "Science Journal",
+                Year = "2020"
+            }
+        };
+        mockLoader.Setup(loader => loader.LoadReferences()).Returns(references);
+
+        var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+        program.Run();
+
+        var outputs = consoleIO.GetOutputs();
+        Assert.Contains(outputs, o => o.Contains("Johnson") && o.Contains("Test Paper"));
+    }
+    finally
+    {
+        if (File.Exists(tempFilePath)) File.Delete(tempFilePath);
+    }
 }
 
 [Fact]
-public void GetAuthors_EmptyInput_PromptsUntilValid()
+public void EndToEnd_FilterReferences_MultipleCriteria()
 {
-    var mockIO = new Mock<ConsoleIO>();
-    mockIO.SetupSequence(io => io.Read())
-        .Returns("")            // Empty input first
-        .Returns("   ")        // Whitespace input
-        .Returns("John Doe")   // Valid input
-        .Returns("");          // Finish
+    string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+    ReferenceManager.Program.FilePath = tempFilePath;
 
-    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
-    program.GetAuthors();
+    try
+    {
+        File.WriteAllText(tempFilePath,
+            "@article{Smith2020T,\n" +
+            "  author = {Smith, John},\n" +
+            "  title = {Test Paper},\n" +
+            "  journal = {Science Journal},\n" +
+            "  year = {2020}\n" +
+            "}\n\n" +
+            "@article{Smith2021A,\n" +
+            "  author = {Smith, John},\n" +
+            "  title = {Another Paper},\n" +
+            "  journal = {Nature},\n" +
+            "  year = {2021}\n" +
+            "}");
 
-    mockIO.Verify(io => io.Write("At least one author is required. Please add an author."), Times.Exactly(2));
+        var consoleIO = new MockConsoleIO(new[] {
+            "filter",
+            "author journal",  // Filter by both author and journal
+            "Smith",          // Author filter
+            "Science",        // Journal filter
+            "exit"
+        });
+
+        var mockLoader = new Mock<IReferenceLoader>();
+        var references = new List<Reference> { 
+            new ArticleReference { 
+                Author = "Smith, John",
+                Title = "Test Paper",
+                Journal = "Science Journal",
+                Year = "2020"
+            },
+            new ArticleReference {
+                Author = "Smith, John",
+                Title = "Another Paper",
+                Journal = "Nature",
+                Year = "2021"
+            }
+        };
+        mockLoader.Setup(loader => loader.LoadReferences()).Returns(references);
+
+        var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+        program.Run();
+
+        var outputs = consoleIO.GetOutputs();
+        Assert.Contains(outputs, o => o.Contains("Science Journal") && o.Contains("2020"));
+        Assert.DoesNotContain(outputs, o => o.Contains("Nature") && o.Contains("2021"));
+    }
+    finally
+    {
+        if (File.Exists(tempFilePath)) File.Delete(tempFilePath);
+    }
+}
+
+[Fact]
+public void EndToEnd_FilterReferences_ExactMatch()
+{
+    string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+    ReferenceManager.Program.FilePath = tempFilePath;
+
+    try
+    {
+        File.WriteAllText(tempFilePath,
+            "@article{Smith2020T,\n" +
+            "  author = {Smith, John},\n" +
+            "  title = {Test Paper},\n" +
+            "  journal = {Science Journal},\n" +
+            "  year = {2020}\n" +
+            "}");
+
+        var consoleIO = new MockConsoleIO(new[] {
+            "filter",
+            "title",
+            "\"Test Paper\"",  // Exact match with quotes
+            "exit"
+        });
+
+        var mockLoader = new Mock<IReferenceLoader>();
+        var references = new List<Reference> { 
+            new ArticleReference { 
+                Author = "Smith, John",
+                Title = "Test Paper",
+                Journal = "Science Journal",
+                Year = "2020"
+            }
+        };
+        mockLoader.Setup(loader => loader.LoadReferences()).Returns(references);
+
+        var program = new ReferenceManager.Program(consoleIO, mockLoader.Object);
+        program.Run();
+
+        var outputs = consoleIO.GetOutputs();
+        Assert.Contains(outputs, o => o.Contains("Test Paper") && o.Contains("Smith"));
+    }
+    finally
+    {
+        if (File.Exists(tempFilePath)) File.Delete(tempFilePath);
+    }
 }
 
     }
