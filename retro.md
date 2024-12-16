@@ -1,1 +1,4 @@
 https://flinga.fi/s/F53HDZZ
+Retrospektiivi pidettiin 11.12.2024.
+
+Toisen sprintin lopussa retrospektiivissä pohditiin, mikä on siihen asti mennyt hyvin ja missä on parannettavaa. Ryhmän yhteistyö koettiin hyödylliseksi, jota päätettiin tehdä myös jatkossa. Missä ryhmä koki olevan parantamisen varaa, oli testien priorisointi, työn aloittaminen aiemmin ja tarkempi suunnittelu. Kehitystoimenpiteitä jatkossa olivat siis työn aloittaminen aiemmin kuin ennen, enemmän ajan jättäminen testaamista varten ja taskien teon suunnittelu. Tarkoitus oli siis suunnitella taskien työnjako ja tekojärjestys tarkemmin, jotta vältyttäisiin enemmiltä merge conflicteilta.
