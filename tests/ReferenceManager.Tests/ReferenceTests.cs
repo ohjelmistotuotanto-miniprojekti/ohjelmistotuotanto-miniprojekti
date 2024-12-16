@@ -7,67 +7,22 @@ using System.Reflection;
 
 using Xunit;
 
-public class UnitTest2
+public class YearValidationTests
 {
-    [Fact]
-    // For the CI/CD test
-    public void Test1()
+    [Theory]
+    [InlineData("")] // Empty string
+    [InlineData("10000")] // Year outside the valid range
+    [InlineData("-2024")] // Negative year
+    [InlineData("Year2024")] // Non-numeric
+    public void SetYear_WithInvalidYear_ThrowsArgumentException(string invalidYear)
     {
-        int result = 2 + 2;
-        Assert.Equal(4, result);
+        var articleReference = new ArticleReference();
+        var inproceedingsReference = new InProceedingsReference();
+
+        Assert.Throws<ArgumentException>(() => articleReference.Year = invalidYear);
+        Assert.Throws<ArgumentException>(() => inproceedingsReference.Year = invalidYear);
     }
 
-    [Fact]
-    public void TestJournalArticle_Properties_Are_Set_Correctly()
-    {
-        var articleReference = new ArticleReference
-        {
-            Author = "Collins, Allan and Brown, John Seely and Holumm Ann",
-            Title = "Cognitive apprenticeship: making thinking visible",
-            Journal = "American Educator",
-            Year = "1991",
-            Volume = "6",
-            Pages = "38--46"
-        };
-
-        Assert.Equal("Collins, Allan and Brown, John Seely and Holumm Ann", articleReference.Author);
-        Assert.Equal("Cognitive apprenticeship: making thinking visible", articleReference.Title);
-        Assert.Equal("American Educator", articleReference.Journal);
-        Assert.Equal("1991", articleReference.Year);
-        Assert.Equal("6", articleReference.Volume);
-        Assert.Equal("38--46", articleReference.Pages);
-
-        Assert.Equal("", articleReference.Month);
-        Assert.Equal("", articleReference.Note);
-        Assert.Equal("", articleReference.Doi);
-    }
-
-    [Fact]
-    public void TestInproceedings_Properties_Are_Set_Correctly()
-    {
-        var articleReference = new InProceedingsReference
-        {
-            Author = "Vihavainen, Arto",
-            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
-            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education",
-            Year = "2011",
-        };
-
-        Assert.Equal("Vihavainen, Arto", articleReference.Author);
-        Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", articleReference.Title);
-        Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", articleReference.BookTitle);
-        Assert.Equal("2011", articleReference.Year);
-        Assert.Equal("", articleReference.Editor);
-        Assert.Equal("", articleReference.Number);
-        Assert.Equal("", articleReference.Series);
-        Assert.Equal("", articleReference.Pages);
-        Assert.Equal("", articleReference.Address);
-        Assert.Equal("", articleReference.Organization);
-        Assert.Equal("", articleReference.Publisher);
-        Assert.Equal("", articleReference.Note);
-    }
-
-    // ===================== TestYear =====================
     [Fact]
     public void TestYear_ValidYear_SetsSuccessfully()
     {
@@ -77,42 +32,6 @@ public class UnitTest2
         reference.Year = validYear;
 
         Assert.Equal(validYear, reference.Year);
-    }
-
-    [Fact]
-    public void TestYear_InvalidYear_ThrowsArgumentException()
-    {
-        var reference = new ArticleReference();
-        string invalidYear = "10000"; // Year outside the valid range
-
-        var exception = Assert.Throws<ArgumentException>(() => reference.Year = invalidYear);
-    }
-
-    [Fact]
-    public void TestYear_NegativeYear_ThrowsArgumentException()
-    {
-        var reference = new ArticleReference();
-        string negativeYear = "-100"; // Negative year is invalid
-
-        var exception = Assert.Throws<ArgumentException>(() => reference.Year = negativeYear);
-    }
-
-    [Fact]
-    public void TestYear_NonNumericYear_ThrowsArgumentException()
-    {
-        var reference = new ArticleReference();
-        string nonNumericYear = "Year2023"; // Non-numeric year is invalid
-
-        var exception = Assert.Throws<ArgumentException>(() => reference.Year = nonNumericYear);
-    }
-
-    [Fact]
-    public void TestYear_EmptyString_ThrowsArgumentException()
-    {
-        var reference = new ArticleReference();
-
-        var exception = Assert.Throws<ArgumentException>(() => reference.Year = "");
-        Assert.Equal("Invalid year", exception.Message);
     }
 
     [Fact]
@@ -134,9 +53,46 @@ public class UnitTest2
         reference.Year = validBoundaryYear;
         Assert.Equal(validBoundaryYear, reference.Year);
     }
-    // ===================== TestYear ends =====================
+}
 
-    // ===================== TestVolume =====================
+public class PagesValidationTests
+{
+
+    [Theory]
+    [InlineData("")] // Empty input
+    [InlineData("5")] // Single page
+    [InlineData("5--10")] // Pages with correct separator
+    public void TestPages_ValidInput_SetsValue(string pages)
+    {
+        var articleReference = new ArticleReference();
+        var inproceedingsReference = new InProceedingsReference();
+
+        articleReference.Pages = pages;
+        inproceedingsReference.Pages = pages;
+
+        Assert.Equal(pages, articleReference.Pages);
+        Assert.Equal(pages, inproceedingsReference.Pages);
+
+    }
+
+    [Theory]
+    [InlineData("5a")] // Invalid characters
+    [InlineData("5-10")] // Invalid range separator
+    public void TestPages_InvalidInput_ThrowsArgumentException(string invalidPages)
+    {
+        var articleReference = new ArticleReference();
+        var inproceedingsReference = new InProceedingsReference();
+
+        var exceptionArticle = Assert.Throws<ArgumentException>(() => articleReference.Pages = invalidPages);
+        Assert.Equal("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.", exceptionArticle.Message);
+        var exceptionInproceedings = Assert.Throws<ArgumentException>(() => inproceedingsReference.Pages = invalidPages);
+        Assert.Equal("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.", exceptionInproceedings.Message);
+    }
+
+}
+
+public class VolumeValidationTests
+{
     [Fact]
     public void TestVolume_NonNumericVolume_ThrowsArgumentException()
     {
@@ -162,12 +118,10 @@ public class UnitTest2
         inProceedingsReference.Volume = validVolume;
         Assert.Equal(validVolume, reference.Volume);
     }
+}
 
-    // ===================== TestVolume ends =====================
-
-
-    // ===================== Test IsInt =====================
-
+public class IsIntTests
+{
     [Fact]
     public void IsInt_ValidInteger_ReturnsTrue()
     {
@@ -237,84 +191,10 @@ public class UnitTest2
         bool result = testClass.isInt(whitespace);
         Assert.False(result);
     }
-    // ===================== Test IsInt ends =====================
+}
 
-    // ===================== Test Pages ==========================
-
-    [Fact]
-    public void TestPages_EmptyInputSetsValue()
-    {
-        // Arrange
-        var inProceedings = new InProceedingsReference();
-
-        // Act
-        inProceedings.Pages = "";
-
-        // Assert
-        Assert.Equal("", inProceedings.Pages);
-    }
-
-    [Fact]
-    public void TestPages_ValidSinglePageSetsValue()
-    {
-        // Arrange
-        var reference = new InProceedingsReference();
-
-        // Act
-        reference.Pages = "5";
-
-        // Assert
-        Assert.Equal("5", reference.Pages);
-    }
-
-    [Fact]
-    public void TestPages_ValidPageRangeSetsValue()
-    {
-        // Arrange
-        var reference = new InProceedingsReference();
-
-        // Act
-        reference.Pages = "5--8";
-
-        // Assert
-        Assert.Equal("5--8", reference.Pages);
-    }
-
-    [Fact]
-    public void TestPages_InvalidCharactersThrowsException()
-    {
-        // Arrange
-        var reference = new InProceedingsReference();
-
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() => reference.Pages = "5a");
-        Assert.Equal("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.", exception.Message);
-    }
-
-    [Fact]
-    public void TestPages_InvalidRangeSeparatorThrowsException()
-    {
-        // Arrange
-        var reference = new InProceedingsReference();
-
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() => reference.Pages = "5-10");
-        Assert.Equal("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.", exception.Message);
-    }
-
-    [Fact]
-    public void TestBookTitle_ÉmptyInputThrowsArgumentException()
-    {
-        // Arrange
-        var reference = new InProceedingsReference();
-
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() => reference.BookTitle = "");
-        Assert.Equal("You must input a book title.", exception.Message);
-    }
-
-
-
+public class ToBibtexTests
+{
     [Fact]
     public void TestToBibtex()
     {
@@ -439,20 +319,6 @@ public class UnitTest2
     }
 
     [Fact]
-    public void TestKeyGeneration()
-    {
-        var testReference = new InProceedingsReference
-        {
-            Author = "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
-            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
-            Year = "2011",
-            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
-        };
-
-        Assert.Equal("Vihavainen2011E", testReference.Key);
-    }
-
-    [Fact]
     public void TestToBibtexFile()
     {
         // Arrange
@@ -481,6 +347,90 @@ public class UnitTest2
         // Assert
         Assert.Equal(normalizedExpected, normalizedActual);
     }
+}
 
+public class UnitTest2
+{
+    [Fact]
+    // For the CI/CD test
+    public void Test1()
+    {
+        int result = 2 + 2;
+        Assert.Equal(4, result);
+    }
 
+    [Fact]
+    public void TestJournalArticle_Properties_Are_Set_Correctly()
+    {
+        var articleReference = new ArticleReference
+        {
+            Author = "Collins, Allan and Brown, John Seely and Holumm Ann",
+            Title = "Cognitive apprenticeship: making thinking visible",
+            Journal = "American Educator",
+            Year = "1991",
+            Volume = "6",
+            Pages = "38--46"
+        };
+
+        Assert.Equal("Collins, Allan and Brown, John Seely and Holumm Ann", articleReference.Author);
+        Assert.Equal("Cognitive apprenticeship: making thinking visible", articleReference.Title);
+        Assert.Equal("American Educator", articleReference.Journal);
+        Assert.Equal("1991", articleReference.Year);
+        Assert.Equal("6", articleReference.Volume);
+        Assert.Equal("38--46", articleReference.Pages);
+
+        Assert.Equal("", articleReference.Month);
+        Assert.Equal("", articleReference.Note);
+        Assert.Equal("", articleReference.Doi);
+    }
+
+    [Fact]
+    public void TestInproceedings_Properties_Are_Set_Correctly()
+    {
+        var articleReference = new InProceedingsReference
+        {
+            Author = "Vihavainen, Arto",
+            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education",
+            Year = "2011",
+        };
+
+        Assert.Equal("Vihavainen, Arto", articleReference.Author);
+        Assert.Equal("Extreme Apprenticeship Method in Teaching Programming for Beginners.", articleReference.Title);
+        Assert.Equal("SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education", articleReference.BookTitle);
+        Assert.Equal("2011", articleReference.Year);
+        Assert.Equal("", articleReference.Editor);
+        Assert.Equal("", articleReference.Number);
+        Assert.Equal("", articleReference.Series);
+        Assert.Equal("", articleReference.Pages);
+        Assert.Equal("", articleReference.Address);
+        Assert.Equal("", articleReference.Organization);
+        Assert.Equal("", articleReference.Publisher);
+        Assert.Equal("", articleReference.Note);
+    }
+
+    [Fact]
+    public void TestBookTitle_EmptyInputThrowsArgumentException()
+    {
+        // Arrange
+        var reference = new InProceedingsReference();
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => reference.BookTitle = "");
+        Assert.Equal("You must input a book title.", exception.Message);
+    }
+
+    [Fact]
+    public void TestKeyGeneration()
+    {
+        var testReference = new InProceedingsReference
+        {
+            Author = "Vihavainen, Arto and Paksula, Matti and Luukkainen, Matti",
+            Title = "Extreme Apprenticeship Method in Teaching Programming for Beginners.",
+            Year = "2011",
+            BookTitle = "SIGCSE '11: Proceedings of the 42nd SIGCSE technical symposium on Computer science education"
+        };
+
+        Assert.Equal("Vihavainen2011E", testReference.Key);
+    }
 }

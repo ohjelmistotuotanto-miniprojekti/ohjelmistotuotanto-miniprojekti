@@ -157,7 +157,7 @@ namespace ReferenceManager
                     }
                     if (!input.All(char.IsDigit))
                     {
-                        throw new ArgumentNullException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
+                        throw new ArgumentException("You must eighter input a range of pages or a single page. Range must be separated by '--'. If there is no pages to input, leave this empty.");
                     }
                     _pages = value;
                 }
