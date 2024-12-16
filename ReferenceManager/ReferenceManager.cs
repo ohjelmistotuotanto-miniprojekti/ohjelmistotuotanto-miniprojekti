@@ -53,6 +53,9 @@ namespace ReferenceManager
                     case "list":
                         ListReferences(references);
                         break;
+                    case "print references":
+                        PrintReferences(references);
+                        break;
                     case "filter":
                         // Load references from the file
                         references = LoadReferencesFromFile();
@@ -446,6 +449,78 @@ namespace ReferenceManager
             }
         }
 
+        /// <summary>
+        /// Lists all references in human readable form, like Latex
+        /// </summary>
+        /// <summary>
+        /// Lists all references
+        /// </summary>
+        public void PrintReferences(List<Reference> references)
+        {
+            _io.Write("Listing all references:");
+
+            // Check if the file exists
+            if (File.Exists(FilePath))
+            {
+                _io.Write("\nReferences from file:");
+                using (var reader = new StreamReader(FilePath))
+                {
+                    string? line;
+                    string referenceLine = ""; // To build the entire reference line
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(line) || line == "}")
+                        {
+                            if (!string.IsNullOrEmpty(referenceLine))
+                            {
+                                _io.Write(referenceLine.TrimEnd(',', '.')); // Print the completed reference
+                                referenceLine = ""; // Reset for the next reference
+                            }
+                            continue;
+                        }
+
+                        if (line.StartsWith("@"))
+                        {
+                            // Start a new reference
+                            if (!string.IsNullOrEmpty(referenceLine))
+                            {
+                                _io.Write(referenceLine.TrimEnd(',', '.') + "."); // Print the previous reference
+                                referenceLine = "";
+                            }
+                            continue;
+                        }
+
+                        string endingOfLine = ".";
+                        if (line[2] is 'j' or 'p') // Check for journal or pages
+                        {
+                            endingOfLine = ",";
+                        }
+
+
+                        for (int i = 0; i < line.Length; i++)
+                        {
+                            if (line[i] == '{')
+                            {
+                                string content = line.Substring(i + 1).Split('}')[0];
+                                referenceLine += content + endingOfLine + " ";
+                                break;
+                            }
+                        }
+                    }
+
+                    // Print the last reference if it exists
+                    if (!string.IsNullOrEmpty(referenceLine))
+                    {
+                        _io.Write(referenceLine.TrimEnd(',', '.'));
+                    }
+                }
+            }
+            else
+            {
+                _io.Write("\nNo file found. Add references to create the file.");
+            }
+        }
+
 
         public List<Reference> LoadReferencesFromFile()
         {
@@ -658,6 +733,7 @@ namespace ReferenceManager
             _io.Write("  filter - Filter references by author, journal, year, or title");
             _io.Write("  help - Show available commands");
             _io.Write("  exit - Exit the application");
+            _io.Write("  print references - Lists references in human readable format");
         }
     }
 
