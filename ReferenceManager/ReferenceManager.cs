@@ -473,7 +473,7 @@ namespace ReferenceManager
                         {
                             if (!string.IsNullOrEmpty(referenceLine))
                             {
-                                _io.Write(referenceLine.TrimEnd(',', '.') ); // Print the completed reference
+                                _io.Write(referenceLine.TrimEnd(',', '.')); // Print the completed reference
                                 referenceLine = ""; // Reset for the next reference
                             }
                             continue;
@@ -491,12 +491,12 @@ namespace ReferenceManager
                         }
 
                         string endingOfLine = ".";
-                        if (line[2] == 'j' || line[2] == 'p') // Check for journal or pages
+                        if (line[2] is 'j' or 'p') // Check for journal or pages
                         {
                             endingOfLine = ",";
                         }
 
-              
+
                         for (int i = 0; i < line.Length; i++)
                         {
                             if (line[i] == '{')
