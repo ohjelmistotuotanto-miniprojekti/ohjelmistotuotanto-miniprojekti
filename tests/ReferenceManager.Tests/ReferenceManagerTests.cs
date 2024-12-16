@@ -837,7 +837,7 @@ namespace ReferenceManager.Tests
                 Times.Once);
         }
 
- [Fact]
+        [Fact]
         public void filterTitleExplicitly()
         {
             // Arrange
@@ -1267,6 +1267,237 @@ namespace ReferenceManager.Tests
             program.GetAuthors();
 
             mockIO.Verify(io => io.Write("At least one author is required. Please add an author."), Times.Exactly(2));
+        }
+
+        [Fact]
+        public void GiveUserInputFromMandatoryField_EmptyInput_PromptsUntilValid()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("")
+                .Returns("   ")
+                .Returns("validInput");
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            var result = program.GiveUserInputFromMandatoryField("TestField");
+
+            Assert.Equal("validInput", result);
+            mockIO.Verify(io => io.Write("TestField cannot be empty. Please enter again."), Times.Exactly(2));
+        }
+
+        [Fact]
+        public void GiveUserInputFromMandatoryField_ValidInput_ReturnsInput()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.Setup(io => io.Read()).Returns("validInput");
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            var result = program.GiveUserInputFromMandatoryField("TestField");
+
+            Assert.Equal("validInput", result);
+            mockIO.Verify(io => io.Write("TestField*: "), Times.Once);
+        }
+
+        [Fact]
+        public void PrintReferences_MultipleReferences_FormatsCorrectly()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            string tempFilePath = Path.GetTempFileName();
+            string content = 
+                "@article{test2023,\n" +
+                "author = {Test Author},\n" +
+                "title = {Test Title},\n" +
+                "journal = {Test Journal},\n" +
+                "year = {2023},\n" +
+                "pages = {1--10}\n" +
+                "}\n\n" +
+                "@inproceedings{conf2023,\n" +
+                "author = {Conference Author},\n" +
+                "title = {Conference Paper},\n" +
+                "booktitle = {Test Conference},\n" +
+                "year = {2023}\n" +
+                "}";
+
+            File.WriteAllText(tempFilePath, content);
+            Program.FilePath = tempFilePath;
+
+            try
+            {
+                var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+                program.PrintReferences(new List<Reference>());
+
+                // Verify each line separately with exact spacing
+                mockIO.Verify(io => io.Write("Listing all references:"), Times.Once);
+                mockIO.Verify(io => io.Write("\nReferences from file:"), Times.Once);
+                mockIO.Verify(io => io.Write("Test Author. Test Title. Test Journal. 2023. 1--10. "), Times.Once);
+                mockIO.Verify(io => io.Write("Conference Author. Conference Paper. Test Conference. 2023. "), Times.Once);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+            }
+        }
+
+        [Fact]
+        public void PrintReferences_EmptyFile_ShowsAppropriateMessage()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            
+            // Create temp file path but don't create the file
+            string tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+            Program.FilePath = tempFilePath;
+
+            // Setup mock reference loader to return empty list
+            mockReferenceLoader.Setup(l => l.LoadReferences())
+                .Returns(new List<Reference>());
+
+            try
+            {
+                var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+                program.PrintReferences(new List<Reference>());
+
+                // Verify exact message format
+                mockIO.Verify(io => io.Write("Listing all references:"), Times.Once);
+                mockIO.Verify(io => io.Write("\nNo file found. Add references to create the file."), Times.Once);
+            }
+            finally
+            {
+                // Cleanup if file was created
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+            }
+        }
+
+        [Fact]
+        public void FilterReferences_EmptyCriteria_ShowsAllReferences()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference> 
+            {
+                new ArticleReference 
+                { 
+                    Author = "Test Author",
+                    Title = "Test Title",
+                    Journal = "Test Journal",
+                    Year = "2023"
+                }
+            };
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("");  // Empty criteria
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            
+            // Act
+            program.FilterReferences(references);
+
+            // Assert
+            mockIO.Verify(io => io.Write("No criteria selected. Displaying all references."), Times.Once);
+        }
+
+        [Fact]
+        public void FilterReferences_NoMatchingReferences_ShowsAppropriateMessage()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference> 
+            {
+                new ArticleReference 
+                { 
+                    Author = "Test Author",
+                    Title = "Test Title",
+                    Journal = "Test Journal",
+                    Year = "2023"
+                }
+            };
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("author")          // Filter by author
+                .Returns("Nonexistent");    // Author that doesn't exist
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            
+            // Act
+            program.FilterReferences(references);
+
+            // Assert
+            mockIO.Verify(io => io.Write("No references match the given criteria."), Times.Once);
+        }
+
+        [Fact]
+        public void Run_PrintReferencesCommand_ExecutesCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("print references")
+                .Returns("exit");
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+            
+            // Act
+            program.Run();
+
+            // Assert
+            mockIO.Verify(io => io.Write("Listing all references:"), Times.Once);
+        }
+
+        [Fact]
+        public void FilterReferences_MultipleAuthors_FiltersCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference> 
+            {
+                new ArticleReference 
+                { 
+                    Author = "Smith, John, Jones, Bob",
+                    Title = "Test Title",
+                    Journal = "Test Journal",
+                    Year = "2023"
+                }
+            };
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("author")
+                .Returns("Smith, Jones");    // Multiple authors
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            
+            // Act
+            program.FilterReferences(references);
+
+            // Assert
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+        }
+
+        [Fact]
+        public void Run_FilterWithEmptyReferences_HandlesCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            
+            mockReferenceLoader.Setup(l => l.LoadReferences())
+                .Returns(new List<Reference>());
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("filter")
+                .Returns("exit");
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+            
+            // Act
+            program.Run();
+
+            // Assert
+            mockIO.Verify(io => io.Write("No references found in the file."), Times.Once);
         }
 
 }
