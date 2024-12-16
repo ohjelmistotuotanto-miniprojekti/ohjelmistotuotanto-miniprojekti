@@ -1013,8 +1013,250 @@ namespace ReferenceManager.Tests
                 Times.Once);
         }
 
-        
+        [Fact]
 
+        public void filterYearBroadly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new InProceedingsReference
+            {
+                Author = "Jane Smith",
+                Title = "Conference Paper",
+                BookTitle = "Tech",
+                Year = "2023"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doe, Liisa Doe, John Doa",
+                Title = "Sample Title",
+                Journal = "Tech Journal",
+                Year = "2024"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doa",
+                Title = "Title",
+                Journal = "Tech",
+                Year = "2022"
+            });
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("year")
+                .Returns("2022");
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter year (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {John Doa}") &&
+                s.Contains("title = {Title}") &&
+                s.Contains("journal = {Tech}") &&
+                s.Contains("year = {2022}"))),
+                Times.Once);
+        }
+
+
+        [Fact]
+        public void filterYearExplicitly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new InProceedingsReference
+            {
+                Author = "Jane Smith",
+                Title = "Conference Paper",
+                BookTitle = "Tech",
+                Year = "2022"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doe, Liisa Doe, John Doa",
+                Title = "Sample Title",
+                Journal = "Tech Journal",
+                Year = "2024"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doa",
+                Title = "Title",
+                Journal = "Tech",
+                Year = "2022"
+            });
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("year")
+                .Returns("\"2022\"");
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter year (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@article{") &&
+                s.Contains("author = {John Doa}") &&
+                s.Contains("title = {Title}") &&
+                s.Contains("journal = {Tech}") &&
+                s.Contains("year = {2022}"))),
+                Times.Once);
+
+            // Verify second reference
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@inproceedings{") &&
+                s.Contains("author = {Jane Smith}") &&
+                s.Contains("title = {Conference Paper}") &&
+                s.Contains("booktitle = {Tech}") &&
+                s.Contains("year = {2022}"))),
+                Times.Once);
+        }
+
+        [Fact]
+
+        public void filterWithMultipleCriteriaDoesntFindAnyhting()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new InProceedingsReference
+            {
+                Author = "Jane Smith",
+                Title = "Conference Paper",
+                BookTitle = "Tech",
+                Year = "2023"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doe, Liisa Doe, John Doa",
+                Title = "Sample Title",
+                Journal = "Tech Journal",
+                Year = "2024"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doa",
+                Title = "Title",
+                Journal = "Tech",
+                Year = "2022"
+            });
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("author title journal year")
+                .Returns("\"John Doae\"")
+                .Returns("\"Title\"")
+                .Returns("\"Tech\"")
+                .Returns("2022");
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter author (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Enter title (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Enter journal (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Enter year (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("No references match the given criteria."), Times.Once);
+        }
+        [Fact]
+        public void filterWithMultipleCriteriaDoesFindReferences()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            var references = new List<Reference>();
+            references.Add(new InProceedingsReference
+            {
+                Author = "Jane Smith",
+                Title = "Conference Paper",
+                BookTitle = "Tech",
+                Year = "2022"
+            });
+            references.Add(new InProceedingsReference
+            {
+                Author = "John Doe, Liisa Doe, John Doa",
+                Title = "Sample Title",
+                BookTitle = "Tech Journal",
+                Year = "2022"
+            });
+            references.Add(new ArticleReference
+            {
+                Author = "John Doa",
+                Title = "Title",
+                Journal = "Tech",
+                Year = "2022"
+            });
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("title year journal")
+                .Returns("\"Sample Title\"")
+                .Returns("\"2022\"")
+                .Returns("");
+
+
+            mockIO.Setup(io => io.Write(It.IsAny<string>()))
+                .Verifiable();
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            // Act
+            program.FilterReferences(references);
+
+            // Verify initial prompts
+            mockIO.Verify(io => io.Write("Select filter criteria (e.g., 'author year', 'title', 'author journal'):"), Times.Once);
+            mockIO.Verify(io => io.Write("If you want to filter exactly, use '\"' (e.g., \"John\" for John and John for john Doe, Johnnes and ...)"), Times.Once);
+            mockIO.Verify(io => io.Write("Available criteria: author, journal, year, title"), Times.Once);
+            mockIO.Verify(io => io.Write("Enter title (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Enter year (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Enter journal (or leave blank to skip): "), Times.Once);
+            mockIO.Verify(io => io.Write("Filtered references (matching criteria):"), Times.Once);
+
+            // Verify BibTeX output using It.Is to match the exact format
+            mockIO.Verify(io => io.Write(It.Is<string>(s =>
+                s.StartsWith("@inproceedings{") &&
+                s.Contains("author = {John Doe, Liisa Doe, John Doa}") &&
+                s.Contains("title = {Sample Title}") &&
+                s.Contains("booktitle = {Tech Journal}") &&
+                s.Contains("year = {2022}"))),
+                Times.Once);
+        }
 
 
         [Fact]
