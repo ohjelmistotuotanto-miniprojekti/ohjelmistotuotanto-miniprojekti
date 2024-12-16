@@ -15,7 +15,7 @@ https://docs.google.com/document/d/1q0EXRurnsQLYOGQiM3NbFrLV6FZjRvavblajhf58gcQ/
 
 # Definition of done
 
-Sprint 1:
+### Sprint 1:
 
 1. CI/CD environment for automated unit testing
 2. Ability to add journal articles
@@ -26,6 +26,40 @@ Sprint 1:
    1. The system must provide functionality to generate a BibTeX-formatted file from the references for use in LaTeX documents.
    2. System will print the BibTeX -formatted input
    3. System gives a infomessage about success /failure
+
+
+### Sprint 2:
+1. Ability to add inproceedings articles
+   1. A CLI command is available for adding "inproceedings" articles, allowing the user to input required details (e.g., title, authors, year, book title, and publisher)  through interactive prompts.
+   2. Validation is in place to ensure required fields are filled.
+   3. System asks confirmation about operation
+   4. System gives a infomessage about success /failure
+   5. Successfully added articles are stored in the system and can be viewed with a CLI command.
+2. Add optional fields into articles
+   1. User can add optional fields into articles or inproceedings.
+   2. Validation ensures all required fields for the selected type are provided.
+   3. System gives a infomessage about success /failure.
+   4. Successfully added articles are stored in the system and can be viewed with a CLI command.
+3. Program has proper validation for input fields, won't crash if wrong input format
+   1. If a wrong datatype of input is given, the program will give an error message instead of crashing.
+   2. If wrong input is given, program will ask for a valid input.
+4. Support for multiple authors
+   1. The CLI command for adding an article allows specifying multiple authors through repeated prompts for each author.
+   2. Validation ensures at least one author is provided.
+   3. Articles with multiple authors are stored correctly and appear properly formatted in the human-readable reference list and BibTeX output.
+
+### Sprint 3:
+1. Support for multiple authors
+   1. The CLI command for adding an article allows specifying multiple authors through repeated prompts for each author.
+   2. Validation ensures at least one author is provided.
+   3. Articles with multiple authors are stored correctly and appear properly formatted in the human-readable reference list and BibTeX output.
+2. Generate human-readable reference list
+   1. The system must allow users to generate a human-readable list of references stored in the system
+3. References can be filtered by author, year, title or publication.
+   1. System allows user to filter references  for example by year, author, title or publication.
+   2. System will print the filtered references.
+
+
 
 ## Developer / Collaborator instructions / Getting started
 
