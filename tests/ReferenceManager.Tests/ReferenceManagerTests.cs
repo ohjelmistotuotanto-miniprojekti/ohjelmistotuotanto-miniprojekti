@@ -1740,8 +1740,115 @@ namespace ReferenceManager.Tests
 
             // Assert
             mockIO.Verify(io => io.Write("No references found in the file."), Times.Once);
+        }       
+        
+        [Fact]
+        public void AddInProceedings_WithInvalidYear_HandlesError()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference>();
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Author Name")     // Author
+                .Returns("")                // Confirm authors
+                .Returns("Test Title")      // Title
+                .Returns("Test Conference") // BookTitle
+                .Returns("abc")            // Invalid Year
+                .Returns("2024")           // Valid Year
+                .Returns("")               // Month
+                .Returns("")               // Editor
+                .Returns("")               // Volume
+                .Returns("")               // Series
+                .Returns("")               // Pages
+                .Returns("")               // Address
+                .Returns("")               // Organization
+                .Returns("")               // Publisher
+                .Returns("")               // Note
+                .Returns("")               // Key
+                .Returns("y");             // Confirm
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+
+            // Act
+            program.AddInProceedings(references);
+
+            // Assert
+            mockIO.Verify(io => io.Write("Invalid year"), Times.Once);
         }
 
+        [Fact]
+        public void FilterReferences_WithExactJournalMatch_FiltersCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var references = new List<Reference> 
+            {
+                new ArticleReference 
+                { 
+                    Author = "Test Author",
+                    Title = "Test Title",
+                    Journal = "Nature",
+                    Year = "2023"
+                }
+            };
+
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("journal")         // Filter by journal
+                .Returns("\"Nature\"");     // Exact match with quotes
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            
+            // Act
+            program.FilterReferences(references);
+
+            // Assert
+            mockIO.Verify(io => io.Write(It.Is<string>(s => s.Contains("Nature"))), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void GetAuthors_MultipleAuthorsWithSpaces_TrimsAndSortsCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("  Smith, John  ")    // Author with extra spaces
+                .Returns(" Doe, Jane ")        // Another author with spaces
+                .Returns("");                   // Finish
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+
+            // Act
+            var result = program.GetAuthors();
+
+            // Assert
+            Assert.Equal("Doe, Jane, Smith, John", result);
+        }
+
+        [Fact]
+        public void LoadReferencesFromFile_WithCorruptedFile_HandlesError()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            
+            // Setup mock to throw exception
+            mockReferenceLoader
+                .Setup(l => l.LoadReferences())
+                .Throws(new Exception("File is corrupted"));
+
+            Program.FilePath = "corrupted.bib";
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+            
+            // Act
+            var references = program.LoadReferencesFromFile();
+
+            // Assert
+            mockIO.Verify(io => io.Write("References file not found."), Times.Once);
+            // Or verify the actual error message from the implementation:
+            // mockIO.Verify(io => io.Write(It.Is<string>(s => s.StartsWith("Failed to load references:"))), Times.Once);
+        }
 }
 
     /// <summary>
