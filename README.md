@@ -10,6 +10,9 @@ A simple C# application for managing BibTeX references.
 
 https://docs.google.com/spreadsheets/d/1109rdzZxVDn1R0a3zG7uqhMdJKA6VQSDgxw8KljecDI
 
+# Report
+https://docs.google.com/document/d/1q0EXRurnsQLYOGQiM3NbFrLV6FZjRvavblajhf58gcQ/edit?usp=sharing
+
 # Definition of done
 
 Sprint 1:
