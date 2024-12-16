@@ -1073,6 +1073,202 @@ namespace ReferenceManager.Tests
             }
         }
 
+        [Fact]
+        public void LoadReferencesFromFile_WithValidArticleReference_LoadsCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            string tempFilePath = Path.GetTempFileName();
+            string referenceContent = "@article{Smith2023T,\n" +
+                                "author = {Smith, John},\n" +
+                                "title = {Test Title},\n" +
+                                "journal = {Test Journal},\n" +
+                                "year = {2023}\n" +
+                                "}";
+
+            File.WriteAllText(tempFilePath, referenceContent);
+            Program.FilePath = tempFilePath;
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            try
+            {
+                // Act
+                var references = program.LoadReferencesFromFile();
+
+                // Assert
+                Assert.Single(references);
+                var reference = references[0] as ArticleReference;
+                Assert.NotNull(reference);
+                Assert.Equal("Smith, John", reference.Author);
+                Assert.Equal("Test Title", reference.Title);
+                Assert.Equal("Test Journal", reference.Journal);
+                Assert.Equal("2023", reference.Year);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+            }
+        }
+
+
+        [Fact]
+        public void LoadReferencesFromFile_WithMultipleReferences_LoadsAllCorrectly()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            string tempFilePath = Path.GetTempFileName();
+            string referenceContent = 
+                "@article{Smith2023T,\n" +
+                "author = {Smith, John},\n" +
+                "title = {Test Title},\n" +
+                "journal = {Test Journal},\n" +
+                "year = {2023}\n" +
+                "}\n\n" +
+                "@inproceedings{Jones2022P,\n" +
+                "author = {Jones, Bob},\n" +
+                "title = {Conference Paper},\n" +
+                "booktitle = {Test Conference},\n" +
+                "year = {2022}\n" +
+                "}";
+
+            File.WriteAllText(tempFilePath, referenceContent);
+            Program.FilePath = tempFilePath;
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            try
+            {
+                // Act
+                var references = program.LoadReferencesFromFile();
+
+                // Assert
+                Assert.Equal(2, references.Count);
+                Assert.Contains(references, r => r is ArticleReference);
+                Assert.Contains(references, r => r is InProceedingsReference);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+            }
+        }
+
+        [Fact]
+        public void LoadReferencesFromFile_WithNonexistentFile_ReturnsEmptyList()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            
+            // Ensure the file path points to a nonexistent file
+            string nonexistentPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".bib");
+            Program.FilePath = nonexistentPath;
+            
+            // Explicitly set up the mock to return empty list
+            mockReferenceLoader
+                .Setup(l => l.LoadReferences())
+                .Returns(new List<Reference>());
+            
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            try 
+            {
+                // Act
+                var references = program.LoadReferencesFromFile();
+
+                // Assert
+                Assert.Empty(references);
+                mockIO.Verify(io => io.Write("References file not found."), Times.Once);
+            }
+            finally 
+            {
+                // Cleanup
+                if (File.Exists(nonexistentPath))
+                {
+                    File.Delete(nonexistentPath);
+                }
+            }
+        }
+
+        [Fact]
+        public void LoadReferencesFromFile_WithInvalidFormat_HandlesErrorGracefully()
+        {
+            // Arrange
+            var mockIO = new Mock<ConsoleIO>();
+            var mockReferenceLoader = new Mock<IReferenceLoader>();
+            string tempFilePath = Path.GetTempFileName();
+            string invalidContent = "This is not a valid BibTeX format";
+
+            File.WriteAllText(tempFilePath, invalidContent);
+            Program.FilePath = tempFilePath;
+
+            var program = new Program(mockIO.Object, mockReferenceLoader.Object);
+
+            try
+            {
+                // Act
+                var references = program.LoadReferencesFromFile();
+
+                // Assert
+                Assert.Empty(references);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+            }
+        }
+
+        [Fact]
+        public void GetAuthors_SingleAuthor_ReturnsCorrectly()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("John Doe")    // First author
+                .Returns("");           // Empty to finish
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            var result = program.GetAuthors();
+
+            Assert.Equal("John Doe", result);
+        }
+
+        [Fact]
+        public void GetAuthors_MultipleAuthors_ReturnsSortedList()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("Charles Darwin")
+                .Returns("Alan Turing")
+                .Returns("Bob Smith")
+                .Returns("");
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            var result = program.GetAuthors();
+
+            Assert.Equal("Alan Turing, Bob Smith, Charles Darwin", result);
+        }
+
+        [Fact]
+        public void GetAuthors_EmptyInput_PromptsUntilValid()
+        {
+            var mockIO = new Mock<ConsoleIO>();
+            mockIO.SetupSequence(io => io.Read())
+                .Returns("")            // Empty input first
+                .Returns("   ")        // Whitespace input
+                .Returns("John Doe")   // Valid input
+                .Returns("");          // Finish
+
+            var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+            program.GetAuthors();
+
+            mockIO.Verify(io => io.Write("At least one author is required. Please add an author."), Times.Exactly(2));
+        }
+
 }
 
     /// <summary>
