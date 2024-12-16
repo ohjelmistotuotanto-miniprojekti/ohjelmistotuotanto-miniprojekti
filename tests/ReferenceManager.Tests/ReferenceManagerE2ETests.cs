@@ -244,6 +244,53 @@ namespace ReferenceManager.Tests
                 }
             }
         }
+
+[Fact]
+public void GetAuthors_SingleAuthor_ReturnsCorrectly()
+{
+    var mockIO = new Mock<ConsoleIO>();
+    mockIO.SetupSequence(io => io.Read())
+        .Returns("John Doe")    // First author
+        .Returns("");           // Empty to finish
+
+    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+    var result = program.GetAuthors();
+
+    Assert.Equal("John Doe", result);
+}
+
+[Fact]
+public void GetAuthors_MultipleAuthors_ReturnsSortedList()
+{
+    var mockIO = new Mock<ConsoleIO>();
+    mockIO.SetupSequence(io => io.Read())
+        .Returns("Charles Darwin")
+        .Returns("Alan Turing")
+        .Returns("Bob Smith")
+        .Returns("");
+
+    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+    var result = program.GetAuthors();
+
+    Assert.Equal("Alan Turing, Bob Smith, Charles Darwin", result);
+}
+
+[Fact]
+public void GetAuthors_EmptyInput_PromptsUntilValid()
+{
+    var mockIO = new Mock<ConsoleIO>();
+    mockIO.SetupSequence(io => io.Read())
+        .Returns("")            // Empty input first
+        .Returns("   ")        // Whitespace input
+        .Returns("John Doe")   // Valid input
+        .Returns("");          // Finish
+
+    var program = new Program(mockIO.Object, Mock.Of<IReferenceLoader>());
+    program.GetAuthors();
+
+    mockIO.Verify(io => io.Write("At least one author is required. Please add an author."), Times.Exactly(2));
+}
+
     }
 }
 
